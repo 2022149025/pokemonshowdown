@@ -156,6 +156,29 @@
 						}
 					}
 				}, 3000);
+				// BattleStaticData.prototype.get 패치:
+				// ko-desc.js가 name을 한국어로 변경하여 dex.species.get("다크라이") 등이 실패함.
+				// 한국어 이름으로 조회 시 BattleAliases로 영어 ID를 찾아 재조회.
+				setTimeout(function() {
+					if (typeof Dex === 'undefined') return;
+					var koStrip = function(s) {
+						return ('' + s).toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+					};
+					// Patch the prototype shared by species/moves/items/abilities data accessors
+					var proto = Dex.species && Object.getPrototypeOf(Dex.species);
+					if (proto && proto.get) {
+						var _origProtoGet = proto.get;
+						proto.get = function(name) {
+							var result = _origProtoGet.call(this, name);
+							if (!result.exists && typeof name === 'string' && window.BattleAliases) {
+								var koKey = koStrip(name);
+								var englishId = koKey && window.BattleAliases[koKey];
+								if (englishId) result = _origProtoGet.call(this, englishId);
+							}
+							return result;
+						};
+					}
+				}, 4000);
 				// 한국어 포켓몬 이름으로 인한 아이콘 표시 오류 수정
 				// toID()가 한국어 문자를 제거하므로 BattleAliases를 통해 영어 ID로 변환
 				setTimeout(function() {
