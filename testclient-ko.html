@@ -54,7 +54,7 @@
 		<script>
 			document.getElementById('loading-message').innerHTML += ' 완료<br />라이브러리 로딩 중...';
 		</script>
-		<script nomodule src="/js/lib/ps-polyfill.js"></script>
+		<script nomodule src="js/lib/ps-polyfill.js"></script>
 		<script src="js/lib/jquery-2.2.4.min.js"></script>
 		<script src="js/lib/jquery-cookie.js"></script>
 		<script src="js/lib/autoresize.jquery.min.js"></script>
@@ -67,6 +67,13 @@
 		<script>
 			document.getElementById('loading-message').innerHTML += ' 완료<br />데이터 로딩 중...';
 			window.exports = window;
+			// GitHub Pages 서브디렉토리 배포를 위한 절대 경로 보정
+			$.ajaxPrefilter(function(options) {
+				if (options.url && options.url.charAt(0) === '/' &&
+					options.url.indexOf('/pokemonshowdown/') !== 0) {
+					options.url = '/pokemonshowdown' + options.url;
+				}
+			});
 		</script>
 
 		<!-- fallback for if you've never done a full build -->
