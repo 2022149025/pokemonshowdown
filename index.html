@@ -144,6 +144,18 @@
 						Storage.whenTeamsLoaded.load();
 					}
 				}, 1000);
+				// action.php CORS 차단 우회:
+				// 서버가 |challstr|을 보내면 클라이언트는 action.php에 POST하여
+				// app.user.loaded = true를 설정하는데, GitHub Pages에선 CORS로 차단됨.
+				// 3초 후에도 loaded가 false이면 강제로 true 설정하고 userbar 업데이트.
+				setTimeout(function() {
+					if (typeof app !== 'undefined' && app.user && !app.user.loaded) {
+						app.user.loaded = true;
+						if (app.topbar && app.topbar.updateUserbar) {
+							app.topbar.updateUserbar();
+						}
+					}
+				}, 3000);
 				// 한국어 포켓몬 이름으로 인한 아이콘 표시 오류 수정
 				// toID()가 한국어 문자를 제거하므로 BattleAliases를 통해 영어 ID로 변환
 				setTimeout(function() {
