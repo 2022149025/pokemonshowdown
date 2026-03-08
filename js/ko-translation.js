@@ -476,3 +476,29 @@
 		console.log('[한글화] DexSearch 한국어 종족명 패치 완료');
 	}, 200);
 })();
+// GitHub Pages 로그인 CORS 수정:
+// /~~showdown/action.php는 github.io에서 CORS 차단됨.
+// /action.php는 Access-Control-Allow-Origin: * 헤더를 제공함.
+(function() {
+	var ACTION_URL = 'https://play.pokemonshowdown.com/action.php';
+	function patchGetActionPHP() {
+		// 프로토타입 레벨 패치 (App.prototype.User 접근 가능한 경우)
+		if (typeof App !== 'undefined' && App.prototype && App.prototype.User && App.prototype.User.prototype) {
+			App.prototype.User.prototype.getActionPHP = function() { return ACTION_URL; };
+			console.log('[한글화] getActionPHP 프로토타입 패치 완료');
+			return true;
+		}
+		// 인스턴스 레벨 패치 (app.user가 이미 생성된 경우)
+		if (typeof app !== 'undefined' && app && app.user) {
+			app.user.getActionPHP = function() { return ACTION_URL; };
+			console.log('[한글화] getActionPHP 인스턴스 패치 완료');
+			return true;
+		}
+		return false;
+	}
+	if (!patchGetActionPHP()) {
+		var _loginPatchIv = setInterval(function() {
+			if (patchGetActionPHP()) clearInterval(_loginPatchIv);
+		}, 200);
+	}
+})();
