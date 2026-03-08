@@ -157,10 +157,9 @@
 					}
 				}, 3000);
 				// dex.species.get 직접 패치:
-				// Dex.species.get은 own property이므로 prototype 패치가 불가.
-				// 직접 교체하고 Dex.forGen도 인터셉트하여 젠별 dex에도 적용.
-				setTimeout(function() {
-					if (typeof Dex === 'undefined') return;
+				// Dex.species.get은 own property이므로 직접 교체.
+				// setInterval로 Dex/BattleAliases 준비될 때까지 재시도.
+				(function() {
 					var koStrip = function(s) {
 						return ('' + s).toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
 					};
@@ -178,17 +177,25 @@
 						};
 						dataObj.__koPatchedGet = true;
 					}
-					patchDexSpeciesGet(Dex.species);
-					// Dex.forGen이 반환하는 젠별 dex에도 적용
-					if (Dex.forGen) {
-						var _origForGen = Dex.forGen.bind(Dex);
-						Dex.forGen = function(gen) {
-							var genDex = _origForGen(gen);
-							if (genDex && genDex.species) patchDexSpeciesGet(genDex.species);
-							return genDex;
-						};
-					}
-				}, 4000);
+					var _tryCount = 0;
+					var _patchInterval = setInterval(function() {
+						_tryCount++;
+						if (_tryCount > 40) { clearInterval(_patchInterval); return; } // 20초 후 포기
+						if (typeof Dex === 'undefined' || !Dex.species || !window.BattleAliases) return;
+						patchDexSpeciesGet(Dex.species);
+						// Dex.forGen이 반환하는 젠별 dex에도 적용
+						if (Dex.forGen && !Dex.__koForGenPatched) {
+							var _origForGen = Dex.forGen.bind(Dex);
+							Dex.forGen = function(gen) {
+								var genDex = _origForGen(gen);
+								if (genDex && genDex.species) patchDexSpeciesGet(genDex.species);
+								return genDex;
+							};
+							Dex.__koForGenPatched = true;
+						}
+						clearInterval(_patchInterval);
+					}, 500);
+				})();
 				// 한국어 포켓몬 이름으로 인한 아이콘 표시 오류 수정
 				// toID()가 한국어 문자를 제거하므로 BattleAliases를 통해 영어 ID로 변환
 				setTimeout(function() {
