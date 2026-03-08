@@ -13757,6 +13757,13 @@
                 if (!target[id].baseSpecies) {
                     target[id].baseSpecies = target[id].name || id;
                 }
+<<<<<<< HEAD:js/ko-desc.js
+=======
+                // 영어 원본 이름 보존 (한글 변경 전)
+                if (!target[id].englishName) {
+                    target[id].englishName = target[id].name;
+                }
+>>>>>>> 72392f7b (fix(teambuilder): 포켓몬 선택 시 한글 이름 전달 버그 수정):play.pokemonshowdown.com/js/ko-desc.js
                 var koId = source[id].name.toLowerCase().replace(/[^a-z0-9가-힣ㄱ-ㆎㅏ-ㅣ]+/g, '');
                 if (koId && !window.BattleAliases[koId]) {
                     window.BattleAliases[koId] = id;
@@ -13777,6 +13784,13 @@
                         if (koId && !window.BattleAliases[koId]) {
                             window.BattleAliases[koId] = id;
                         }
+<<<<<<< HEAD:js/ko-desc.js
+=======
+                        // 영어 원본 이름 보존 (한글 변경 전)
+                        if (!target[id].englishName) {
+                            target[id].englishName = target[id].name;
+                        }
+>>>>>>> 72392f7b (fix(teambuilder): 포켓몬 선택 시 한글 이름 전달 버그 수정):play.pokemonshowdown.com/js/ko-desc.js
                         target[id].name = source[id].name;
                     }
                     if (source[id].shortDesc) target[id].shortDesc = source[id].shortDesc;
@@ -13794,4 +13808,32 @@
     applyDescs();
     window.addEventListener('load', applyDescs);
     setTimeout(applyDescs, 3000);
+
+    // 한글 이름 → 영어 이름 변환 헬퍼 함수
+    // 팀빌더에서 한글 이름이 species/item/ability/move에 저장되는 것을 방지
+    window.resolveKoreanName = function(name, type) {
+        if (!name || typeof name !== 'string') return name;
+        // 한글 문자가 포함되어 있는지 확인
+        if (!/[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(name)) return name;
+
+        // BattleAliases에서 한글→영어 매핑 검색
+        var koId = name.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+        if (window.BattleAliases && window.BattleAliases[koId]) {
+            var englishId = window.BattleAliases[koId];
+            // 타입에 따라 적절한 데이터베이스에서 영어 원본 이름 가져오기
+            var db;
+            switch (type) {
+                case 'pokemon': db = window.BattlePokedex; break;
+                case 'move': db = window.BattleMovedex; break;
+                case 'item': db = window.BattleItems; break;
+                case 'ability': db = window.BattleAbilities; break;
+                default: db = window.BattlePokedex;
+            }
+            if (db && db[englishId] && db[englishId].englishName) {
+                return db[englishId].englishName;
+            }
+            return englishId;
+        }
+        return name;
+    };
 })();
