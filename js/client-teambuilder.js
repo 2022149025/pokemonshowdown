@@ -1312,7 +1312,8 @@
 			} else {
 				buf += '<div class="setcell-sprite"></div>';
 			}
-			buf += '<div class="setcell setcell-pokemon"><label>Pok&eacute;mon</label><input type="text" name="pokemon" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.species) + '" autocomplete="off" /></div></div>';
+			var _dispSpecies = (window.BattlePokedex && BattlePokedex[toID(set.species)] && BattlePokedex[toID(set.species)].name) || set.species;
+			buf += '<div class="setcell setcell-pokemon"><label>Pok&eacute;mon</label><input type="text" name="pokemon" class="textbox chartinput" value="' + BattleLog.escapeHTML(_dispSpecies) + '" autocomplete="off" /></div></div>';
 
 			// details
 			buf += '<div class="setcol setcol-details"><div class="setrow">';
@@ -1374,17 +1375,20 @@
 			buf += '</div></div>';
 
 			buf += '<div class="setrow">';
-			if (this.curTeam.gen > 1 && !isLetsGo) buf += '<div class="setcell setcell-item"><label>Item</label><input type="text" name="item" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.item) + '" autocomplete="off" /></div>';
-			if (this.curTeam.gen > 2 && !isLetsGo) buf += '<div class="setcell setcell-ability"><label>Ability</label><input type="text" name="ability" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.ability) + '" autocomplete="off" /></div>';
+			var _dispItem = (window.BattleItems && BattleItems[toID(set.item)] && BattleItems[toID(set.item)].name) || set.item;
+			var _dispAbility = (window.BattleAbilities && BattleAbilities[toID(set.ability)] && BattleAbilities[toID(set.ability)].name) || set.ability;
+			if (this.curTeam.gen > 1 && !isLetsGo) buf += '<div class="setcell setcell-item"><label>Item</label><input type="text" name="item" class="textbox chartinput" value="' + BattleLog.escapeHTML(_dispItem) + '" autocomplete="off" /></div>';
+			if (this.curTeam.gen > 2 && !isLetsGo) buf += '<div class="setcell setcell-ability"><label>Ability</label><input type="text" name="ability" class="textbox chartinput" value="' + BattleLog.escapeHTML(_dispAbility) + '" autocomplete="off" /></div>';
 			buf += '</div></div>';
 
 			// moves
 			if (!set.moves) set.moves = [];
+			var _dm = function(m) { return (m && window.BattleMovedex && BattleMovedex[toID(m)] && BattleMovedex[toID(m)].name) || m || ''; };
 			buf += '<div class="setcol setcol-moves"><div class="setcell"><label>Moves</label>';
-			buf += '<input type="text" name="move1" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.moves[0]) + '" autocomplete="off" /></div>';
-			buf += '<div class="setcell"><input type="text" name="move2" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.moves[1]) + '" autocomplete="off" /></div>';
-			buf += '<div class="setcell"><input type="text" name="move3" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.moves[2]) + '" autocomplete="off" /></div>';
-			buf += '<div class="setcell"><input type="text" name="move4" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.moves[3]) + '" autocomplete="off" /></div>';
+			buf += '<input type="text" name="move1" class="textbox chartinput" value="' + BattleLog.escapeHTML(_dm(set.moves[0])) + '" autocomplete="off" /></div>';
+			buf += '<div class="setcell"><input type="text" name="move2" class="textbox chartinput" value="' + BattleLog.escapeHTML(_dm(set.moves[1])) + '" autocomplete="off" /></div>';
+			buf += '<div class="setcell"><input type="text" name="move3" class="textbox chartinput" value="' + BattleLog.escapeHTML(_dm(set.moves[2])) + '" autocomplete="off" /></div>';
+			buf += '<div class="setcell"><input type="text" name="move4" class="textbox chartinput" value="' + BattleLog.escapeHTML(_dm(set.moves[3])) + '" autocomplete="off" /></div>';
 			buf += '</div>';
 
 			// stats
@@ -3203,6 +3207,13 @@
 			var name = e.currentTarget.name;
 			if (this.curChartName !== name) return;
 			var id = toID(e.currentTarget.value);
+			if (!id && window.BattleAliases) {
+				var _rawKo = e.currentTarget.value;
+				if (/[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(_rawKo)) {
+					var _koKey = _rawKo.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+					if (window.BattleAliases[_koKey]) id = window.BattleAliases[_koKey];
+				}
+			}
 			if (id in BattleAliases) id = toID(BattleAliases[id]);
 			var val = '';
 			var format = this.curTeam.format;
@@ -3344,39 +3355,52 @@
 			var inputName = this.curChartName;
 			var input = this.$('input[name=' + inputName + ']');
 			if (this.chartSetCustom(input.val())) return;
+			// 한글명이면 BattleAliases로 영어 ID를 찾고, englishName으로 정확한 영어명 복원
+			var storedVal = val;
+			if (val && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(val) && window.BattleAliases) {
+				var _csKoKey = val.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+				var _csKoId = window.BattleAliases[_csKoKey];
+				if (_csKoId) {
+					var _csTbl = (inputName === 'pokemon') ? window.BattlePokedex :
+					             (inputName === 'item')    ? window.BattleItems :
+					             (inputName === 'ability') ? window.BattleAbilities :
+					                                        window.BattleMovedex;
+					storedVal = (_csTbl && _csTbl[_csKoId] && _csTbl[_csKoId].englishName) || _csKoId;
+				}
+			}
 			input.val(val).removeClass('incomplete');
 			switch (inputName) {
 			case 'pokemon':
-				this.setPokemon(val, selectNext);
+				this.setPokemon(storedVal, selectNext);
 				break;
 			case 'item':
-				this.curSet.item = val;
+				this.curSet.item = storedVal;
 				this.updatePokemonSprite();
 				if (selectNext) this.$(this.$('input[name=ability]').length ? 'input[name=ability]' : 'input[name=move1]').select();
 				break;
 			case 'ability':
-				this.curSet.ability = val;
+				this.curSet.ability = storedVal;
 				if (selectNext) this.$('input[name=move1]').select();
 				break;
 			case 'move1':
 				this.unChooseMove(this.curSet.moves[0]);
-				this.curSet.moves[0] = val;
-				this.chooseMove(val);
+				this.curSet.moves[0] = storedVal;
+				this.chooseMove(storedVal);
 				if (selectNext) this.$('input[name=move2]').select();
 				break;
 			case 'move2':
 				if (!this.curSet.moves[0]) this.curSet.moves[0] = '';
 				this.unChooseMove(this.curSet.moves[1]);
-				this.curSet.moves[1] = val;
-				this.chooseMove(val);
+				this.curSet.moves[1] = storedVal;
+				this.chooseMove(storedVal);
 				if (selectNext) this.$('input[name=move3]').select();
 				break;
 			case 'move3':
 				if (!this.curSet.moves[0]) this.curSet.moves[0] = '';
 				if (!this.curSet.moves[1]) this.curSet.moves[1] = '';
 				this.unChooseMove(this.curSet.moves[2]);
-				this.curSet.moves[2] = val;
-				this.chooseMove(val);
+				this.curSet.moves[2] = storedVal;
+				this.chooseMove(storedVal);
 				if (selectNext) this.$('input[name=move4]').select();
 				break;
 			case 'move4':
@@ -3384,8 +3408,8 @@
 				if (!this.curSet.moves[1]) this.curSet.moves[1] = '';
 				if (!this.curSet.moves[2]) this.curSet.moves[2] = '';
 				this.unChooseMove(this.curSet.moves[3]);
-				this.curSet.moves[3] = val;
-				this.chooseMove(val);
+				this.curSet.moves[3] = storedVal;
+				this.chooseMove(storedVal);
 				if (selectNext) {
 					this.stats();
 					this.$('button.setstats').focus();
