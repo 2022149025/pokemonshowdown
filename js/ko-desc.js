@@ -13757,13 +13757,10 @@
                 if (!target[id].baseSpecies) {
                     target[id].baseSpecies = target[id].name || id;
                 }
-<<<<<<< HEAD:js/ko-desc.js
-=======
                 // 영어 원본 이름 보존 (한글 변경 전)
                 if (!target[id].englishName) {
                     target[id].englishName = target[id].name;
                 }
->>>>>>> 72392f7b (fix(teambuilder): 포켓몬 선택 시 한글 이름 전달 버그 수정):play.pokemonshowdown.com/js/ko-desc.js
                 var koId = source[id].name.toLowerCase().replace(/[^a-z0-9가-힣ㄱ-ㆎㅏ-ㅣ]+/g, '');
                 if (koId && !window.BattleAliases[koId]) {
                     window.BattleAliases[koId] = id;
@@ -13784,13 +13781,10 @@
                         if (koId && !window.BattleAliases[koId]) {
                             window.BattleAliases[koId] = id;
                         }
-<<<<<<< HEAD:js/ko-desc.js
-=======
                         // 영어 원본 이름 보존 (한글 변경 전)
                         if (!target[id].englishName) {
                             target[id].englishName = target[id].name;
                         }
->>>>>>> 72392f7b (fix(teambuilder): 포켓몬 선택 시 한글 이름 전달 버그 수정):play.pokemonshowdown.com/js/ko-desc.js
                         target[id].name = source[id].name;
                     }
                     if (source[id].shortDesc) target[id].shortDesc = source[id].shortDesc;
