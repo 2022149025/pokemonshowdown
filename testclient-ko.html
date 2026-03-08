@@ -161,7 +161,7 @@
 									// toID 결과가 비어 있으면 (한국어 이름) BattleAliases에서 조회
 									var id = species.toLowerCase().replace(/[^a-z0-9]+/g, '');
 									if (!id) {
-										var koKey = species.toLowerCase();
+										var koKey = species.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
 										var englishId = window.BattleAliases[koKey];
 										if (englishId) {
 											if (typeof pokemon === 'object') {
