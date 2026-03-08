@@ -1303,7 +1303,13 @@
 			buf += '<div class="setchart-nickname">';
 			buf += '<label>Nickname</label><input type="text" name="nickname" class="textbox" value="' + BattleLog.escapeHTML(set.name || '') + '" placeholder="' + BattleLog.escapeHTML(species.baseSpecies) + '" />';
 			buf += '</div>';
-			buf += '<div class="setchart" style="' + Dex.getTeambuilderSprite(set, this.curTeam.dex) + ';">';
+			var _spriteSet = set;
+			if (set.species && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(set.species) && window.BattleAliases) {
+				var _ssKoKey = set.species.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+				var _ssKoId = window.BattleAliases[_ssKoKey];
+				if (_ssKoId) _spriteSet = Object.assign({}, set, {species: _ssKoId});
+			}
+			buf += '<div class="setchart" style="' + Dex.getTeambuilderSprite(_spriteSet, this.curTeam.dex) + ';">';
 
 			// icon
 			buf += '<div class="setcol setcol-icon">';
@@ -2043,7 +2049,13 @@
 			var set = this.curSet;
 			if (!set) return;
 
-			this.$('.setchart').attr('style', Dex.getTeambuilderSprite(set, this.curTeam.dex));
+			var _upsSpriteSet = set;
+			if (set.species && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(set.species) && window.BattleAliases) {
+				var _upsKoKey = set.species.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+				var _upsKoId = window.BattleAliases[_upsKoKey];
+				if (_upsKoId) _upsSpriteSet = Object.assign({}, set, {species: _upsKoId});
+			}
+			this.$('.setchart').attr('style', Dex.getTeambuilderSprite(_upsSpriteSet, this.curTeam.dex));
 
 			this.$('.pokemonicon-' + this.curSetLoc).css('background', Dex.getPokemonIcon(set).substr(11));
 
