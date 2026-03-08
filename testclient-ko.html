@@ -72,7 +72,9 @@
 			$.ajaxPrefilter(function(options) {
 				if (!options.url || options.url.charAt(0) !== '/') return;
 				if (options.url.startsWith('/~~')) {
-					// PS 서버 action URL은 play.pokemonshowdown.com으로 리다이렉트
+					// /~~showdown/action.php → CORS 허용 루트 action.php로 교체
+					// (~~showdown 경유는 github.io origin 차단됨)
+					options.url = options.url.replace(/^\/~~[^\/]*\/action\.php/, '/action.php');
 					options.url = 'https://play.pokemonshowdown.com' + options.url;
 				} else if (options.url.indexOf('/pokemonshowdown/') !== 0) {
 					options.url = '/pokemonshowdown' + options.url;
@@ -194,6 +196,44 @@
 							Dex.__koForGenPatched = true;
 						}
 						clearInterval(_patchInterval);
+					}, 500);
+				})();
+				// Teambuilder setPokemon 패치: 한국어 이름 → 영어 이름으로 정규화
+				// set.species에 한국어가 저장되면 서버 검증 오류 및 스프라이트 오류 발생
+				(function() {
+					function makeNormalizedSetPokemon(orig) {
+						return function(val) {
+							if (typeof val === 'string' && window.BattleAliases) {
+								var id = val.toLowerCase().replace(/[^a-z0-9]+/g, '');
+								if (!id) {
+									var dex = (this.curTeam && this.curTeam.dex) || window.Dex;
+									var sp = dex && dex.species && dex.species.get(val);
+									if (sp && sp.exists) {
+										val = sp.baseSpecies + (sp.forme ? '-' + sp.forme : '');
+									} else {
+										var koKey = val.toLowerCase().replace(/[^a-z0-9가-힣ㄱ-ㆎㅏ-ㅣ]+/g, '');
+										val = window.BattleAliases[koKey] || val;
+									}
+								}
+							}
+							return orig.call(this, val);
+						};
+					}
+					var _tbInterval = setInterval(function() {
+						if (window.TeambuilderRoom && TeambuilderRoom.prototype.setPokemon && !TeambuilderRoom.prototype.__koPatchedSetPokemon) {
+							TeambuilderRoom.prototype.setPokemon = makeNormalizedSetPokemon(TeambuilderRoom.prototype.setPokemon);
+							TeambuilderRoom.prototype.__koPatchedSetPokemon = true;
+							clearInterval(_tbInterval);
+							return;
+						}
+						if (window.app && app.rooms && app.rooms['teambuilder']) {
+							var tb = app.rooms['teambuilder'];
+							if (!tb.__koPatchedSetPokemon && tb.setPokemon) {
+								tb.setPokemon = makeNormalizedSetPokemon(tb.setPokemon);
+								tb.__koPatchedSetPokemon = true;
+								clearInterval(_tbInterval);
+							}
+						}
 					}, 500);
 				})();
 				// 한국어 포켓몬 이름으로 인한 아이콘 표시 오류 수정
