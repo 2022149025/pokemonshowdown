@@ -413,3 +413,37 @@
 		}, 500);
 	};
 })();
+
+// ============================================
+// DexSearch 한국어 종족명 패치
+// BattleTypedSearch가 toID()로 한국어 이름을 '' 처리하는 문제 수정:
+// getTypedSearch 호출 시 speciesOrSet.species가 한국어면 영어 ID로 변환
+// ============================================
+(function() {
+	function resolveKoSpecies(speciesOrSet) {
+		if (!speciesOrSet || typeof speciesOrSet !== 'object' || !window.BattleAliases) return speciesOrSet;
+		var species = speciesOrSet.species;
+		if (!species || typeof species !== 'string') return speciesOrSet;
+		// toID 결과가 비어 있으면 한국어 이름
+		var id = species.toLowerCase().replace(/[^a-z0-9]+/g, '');
+		if (id) return speciesOrSet; // 이미 영어
+		var koKey = species.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+		var englishId = window.BattleAliases[koKey];
+		if (!englishId) return speciesOrSet;
+		// species만 영어 ID로 교체한 복사본 반환
+		var copy = Object.assign({}, speciesOrSet, { species: englishId });
+		return copy;
+	}
+
+	var _interval = setInterval(function() {
+		if (typeof DexSearch === 'undefined') return;
+		if (DexSearch.prototype.__koSpeciesPatched) { clearInterval(_interval); return; }
+		var _origGetTypedSearch = DexSearch.prototype.getTypedSearch;
+		DexSearch.prototype.getTypedSearch = function(searchType, format, speciesOrSet) {
+			return _origGetTypedSearch.call(this, searchType, format, resolveKoSpecies(speciesOrSet));
+		};
+		DexSearch.prototype.__koSpeciesPatched = true;
+		clearInterval(_interval);
+		console.log('[한글화] DexSearch 한국어 종족명 패치 완료');
+	}, 200);
+})();
