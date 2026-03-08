@@ -3608,7 +3608,15 @@
 			} else {
 				set.item = '';
 			}
-			set.ability = species.abilities['0'];
+			var _defAbil = species.abilities['0'];
+			if (_defAbil && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(_defAbil) && window.BattleAliases) {
+				var _daKoKey = _defAbil.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+				var _daId = window.BattleAliases[_daKoKey];
+				if (_daId && window.BattleAbilities && BattleAbilities[_daId]) {
+					_defAbil = BattleAbilities[_daId].englishName || _daId;
+				}
+			}
+			set.ability = _defAbil;
 
 			set.moves = [];
 			set.evs = {};

@@ -415,6 +415,35 @@
 })();
 
 // ============================================
+// BattlePokedex.abilities 한글화 패치
+// renderPokemonRow가 pokemon.abilities['0'] 등을 직접 표시하므로
+// BattleAbilities의 한글명으로 교체해 포켓몬 목록의 특성을 한글로 표시
+// ============================================
+(function() {
+	function patchPokedexAbilities() {
+		if (!window.BattlePokedex || !window.BattleAbilities) return;
+		for (var id in BattlePokedex) {
+			var poke = BattlePokedex[id];
+			if (!poke || !poke.abilities) continue;
+			for (var slot in poke.abilities) {
+				var abilName = poke.abilities[slot];
+				if (!abilName || typeof abilName !== 'string') continue;
+				if (/[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(abilName)) continue; // 이미 한글
+				var abilId = abilName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+				var koAbil = BattleAbilities[abilId];
+				if (koAbil && koAbil.name && koAbil.name !== abilName) {
+					if (!poke.abilities['_en_' + slot]) poke.abilities['_en_' + slot] = abilName;
+					poke.abilities[slot] = koAbil.name;
+				}
+			}
+		}
+	}
+	// ko-desc.js가 BattleAbilities를 패치한 후 실행되도록 지연 적용
+	setTimeout(patchPokedexAbilities, 1000);
+	window.addEventListener('load', function() { setTimeout(patchPokedexAbilities, 500); });
+})();
+
+// ============================================
 // DexSearch 한국어 종족명 패치
 // BattleTypedSearch가 toID()로 한국어 이름을 '' 처리하는 문제 수정:
 // getTypedSearch 호출 시 speciesOrSet.species가 한국어면 영어 ID로 변환
