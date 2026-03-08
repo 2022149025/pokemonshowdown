@@ -13809,31 +13809,45 @@
     window.addEventListener('load', applyDescs);
     setTimeout(applyDescs, 3000);
 
-    // 한글 이름 → 영어 이름 변환 헬퍼 함수
-    // 팀빌더에서 한글 이름이 species/item/ability/move에 저장되는 것을 방지
+    // 한글 이름 → 영어 ID 변환 헬퍼 함수
     window.resolveKoreanName = function(name, type) {
         if (!name || typeof name !== 'string') return name;
-        // 한글 문자가 포함되어 있는지 확인
         if (!/[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(name)) return name;
 
-        // BattleAliases에서 한글→영어 매핑 검색
         var koId = name.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
         if (window.BattleAliases && window.BattleAliases[koId]) {
-            var englishId = window.BattleAliases[koId];
-            // 타입에 따라 적절한 데이터베이스에서 영어 원본 이름 가져오기
-            var db;
-            switch (type) {
-                case 'pokemon': db = window.BattlePokedex; break;
-                case 'move': db = window.BattleMovedex; break;
-                case 'item': db = window.BattleItems; break;
-                case 'ability': db = window.BattleAbilities; break;
-                default: db = window.BattlePokedex;
-            }
-            if (db && db[englishId] && db[englishId].englishName) {
-                return db[englishId].englishName;
-            }
-            return englishId;
+            return window.BattleAliases[koId];
         }
         return name;
     };
+
+    // Dex 객체 몽키패칭: 쇼다운 코어(예: 팀빌더)에서 한글 이름으로 질의 시 영어 데이터로 조회되게 함
+    var setupMonkeyPatch = function() {
+        if (window.Dex && window.Dex.species && !window.Dex._koMonkeyPatched) {
+            var patchGet = function(type) {
+                if (window.Dex[type] && window.Dex[type].get) {
+                    var origGet = window.Dex[type].get;
+                    window.Dex[type].get = function(name) {
+                        if (typeof name === 'string' && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(name)) {
+                            // 한글이면 해당 영문 식별자로 변환 후 원본 get 함수 호출
+                            var resolved = window.resolveKoreanName(name, type.replace(/s\b/, ''));
+                            if (resolved !== name) name = resolved;
+                        }
+                        return origGet.call(this, name);
+                    };
+                }
+            };
+            patchGet('species');
+            patchGet('items');
+            patchGet('moves');
+            patchGet('abilities');
+            patchGet('types');
+            window.Dex._koMonkeyPatched = true;
+        }
+    };
+    setupMonkeyPatch();
+    // Dex가 이후에 초기화될 것에 대비하여 재시도
+    window.addEventListener('load', setupMonkeyPatch);
+    setTimeout(setupMonkeyPatch, 1000);
+    setTimeout(setupMonkeyPatch, 3000);
 })();

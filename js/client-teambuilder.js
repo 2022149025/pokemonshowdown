@@ -3202,16 +3202,7 @@
 		chartChange: function (e, selectNext) {
 			var name = e.currentTarget.name;
 			if (this.curChartName !== name) return;
-			var inputValue = e.currentTarget.value;
-			// 한글 이름이면 먼저 영어로 변환
-			if (window.resolveKoreanName) {
-				var chartType = name.startsWith('move') ? 'move' : name;
-				var resolvedInput = window.resolveKoreanName(inputValue, chartType);
-				if (resolvedInput !== inputValue) {
-					inputValue = resolvedInput;
-				}
-			}
-			var id = toID(inputValue);
+			var id = toID(e.currentTarget.value);
 			if (id in BattleAliases) id = toID(BattleAliases[id]);
 			var val = '';
 			var format = this.curTeam.format;
@@ -3354,45 +3345,26 @@
 			var input = this.$('input[name=' + inputName + ']');
 			if (this.chartSetCustom(input.val())) return;
 			input.val(val).removeClass('incomplete');
-			// 한글 이름을 영어로 변환하는 헬퍼
-			var resolveKo = function(name, type) {
-				if (!window.resolveKoreanName) return name;
-				var resolved = window.resolveKoreanName(name, type);
-				if (resolved !== name) {
-					var db;
-					switch (type) {
-						case 'move': db = window.BattleMovedex; break;
-						case 'item': db = window.BattleItems; break;
-						case 'ability': db = window.BattleAbilities; break;
-					}
-					// 영어 ID에서 원래 영어 이름 가져오기 (DB에 이미 한글 이름이 덮어씌워져 있을 수 있음)
-					// resolved는 영어 ID이므로 그대로 사용
-					return resolved;
-				}
-				return name;
-			};
 			switch (inputName) {
 			case 'pokemon':
 				this.setPokemon(val, selectNext);
 				break;
 			case 'item':
-				this.curSet.item = resolveKo(val, 'item');
+				this.curSet.item = val;
 				this.updatePokemonSprite();
-				if (selectNext) this.$(this.curSet.item || !this.$('input[name=item]').length ? (this.$('input[name=ability]').length ? 'input[name=ability]' : 'input[name=move1]') : 'input[name=item]').select();
+				if (selectNext) this.$(this.$('input[name=ability]').length ? 'input[name=ability]' : 'input[name=move1]').select();
 				break;
 			case 'ability':
-				this.curSet.ability = resolveKo(val, 'ability');
+				this.curSet.ability = val;
 				if (selectNext) this.$('input[name=move1]').select();
 				break;
 			case 'move1':
-				val = resolveKo(val, 'move');
 				this.unChooseMove(this.curSet.moves[0]);
 				this.curSet.moves[0] = val;
 				this.chooseMove(val);
 				if (selectNext) this.$('input[name=move2]').select();
 				break;
 			case 'move2':
-				val = resolveKo(val, 'move');
 				if (!this.curSet.moves[0]) this.curSet.moves[0] = '';
 				this.unChooseMove(this.curSet.moves[1]);
 				this.curSet.moves[1] = val;
@@ -3400,7 +3372,6 @@
 				if (selectNext) this.$('input[name=move3]').select();
 				break;
 			case 'move3':
-				val = resolveKo(val, 'move');
 				if (!this.curSet.moves[0]) this.curSet.moves[0] = '';
 				if (!this.curSet.moves[1]) this.curSet.moves[1] = '';
 				this.unChooseMove(this.curSet.moves[2]);
@@ -3409,7 +3380,6 @@
 				if (selectNext) this.$('input[name=move4]').select();
 				break;
 			case 'move4':
-				val = resolveKo(val, 'move');
 				if (!this.curSet.moves[0]) this.curSet.moves[0] = '';
 				if (!this.curSet.moves[1]) this.curSet.moves[1] = '';
 				if (!this.curSet.moves[2]) this.curSet.moves[2] = '';
@@ -3561,13 +3531,6 @@
 		},
 		setPokemon: function (val, selectNext) {
 			var set = this.curSet;
-			// 한글 이름이면 영어 이름으로 변환
-			if (window.resolveKoreanName) {
-				var resolved = window.resolveKoreanName(val, 'pokemon');
-				if (resolved !== val) {
-					val = resolved;
-				}
-			}
 			var species = this.curTeam.dex.species.get(val);
 			if (!species.exists || set.species === species.name) {
 				if (selectNext) this.$('input[name=item]').select();
