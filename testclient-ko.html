@@ -70,13 +70,19 @@
 			window.exports = window;
 			// GitHub Pages 서브디렉토리 배포를 위한 절대 경로 보정
 			$.ajaxPrefilter(function(options) {
-				if (!options.url || options.url.charAt(0) !== '/') return;
-				if (options.url.startsWith('/~~')) {
-					// /~~showdown/action.php → CORS 허용 루트 action.php로 교체
-					// (~~showdown 경유는 github.io origin 차단됨)
-					options.url = options.url.replace(/^\/~~[^\/]*\/action\.php/, '/action.php');
-					options.url = 'https://play.pokemonshowdown.com' + options.url;
-				} else if (options.url.indexOf('/pokemonshowdown/') !== 0) {
+				if (!options.url) return;
+				// /~~showdown/action.php (상대) 또는 https://.../~~showdown/action.php (절대) 모두 처리
+				// ~~showdown 경유는 github.io origin에서 CORS 차단됨 → 루트 /action.php로 교체
+				if (/\/~~[^\/]*\/action\.php/.test(options.url)) {
+					options.url = options.url.replace(/\/~~[^\/]*\/action\.php/, '/action.php');
+					// 절대 URL이 아니면 절대 URL로 변환
+					if (!/^https?:\/\//.test(options.url)) {
+						options.url = 'https://play.pokemonshowdown.com' + options.url;
+					}
+					return;
+				}
+				if (options.url.charAt(0) !== '/') return;
+				if (options.url.indexOf('/pokemonshowdown/') !== 0) {
 					options.url = '/pokemonshowdown' + options.url;
 				}
 			});
