@@ -20,21 +20,6 @@
 				scriptEl.src = src.replace(/.*\/(data|js)\//g, 'https://play.pokemonshowdown.com/$1/');
 				document.head.appendChild(scriptEl);
 			}
-			Config.testclient = true;
-			(function() {
-				if (location.search !== '') {
-					var m = /\?~~(([^:\/]*)(:[0-9]*)?)/.exec(location.search);
-					if (m) {
-						Config.server = {
-							id: m[1],
-							host: m[2],
-							port: (m[3] && parseInt(m[3].substr(1))) || 8000
-						};
-					} else {
-						alert('Unrecognised query string syntax: ' + location.search);
-					}
-				}
-			})();
 		</script>
 		<!--[if lte IE 8]><script>
 			Config.oldie = true;
@@ -74,7 +59,6 @@
 		<script src="js/lib/jquery-cookie.js"></script>
 		<script src="js/lib/autoresize.jquery.min.js"></script>
 		<script src="js/battle-sound.js"></script>
-		<script src="../config/testclient-key.js"></script>
 		<script src="js/lib/html-css-sanitizer-minified.js"></script>
 		<script src="js/lib/lodash.core.js"></script>
 		<script src="js/lib/backbone.js"></script>
