@@ -124,6 +124,11 @@
 
 		<script>
 			window.onload = () => {
+				// Fix Backbone history root for GitHub Pages subdirectory deployment
+				var _origStart = Backbone.History.prototype.start;
+				Backbone.History.prototype.start = function(options) {
+					return _origStart.call(this, Object.assign({ root: '/pokemonshowdown/' }, options || {}));
+				};
 				window.app = new App();
 				// crossdomain.php rejects non-psim.us hosts (GitHub Pages).
 				// Manually trigger Storage.whenPrefsLoaded if the cross-origin
