@@ -70,8 +70,11 @@
 			window.exports = window;
 			// GitHub Pages 서브디렉토리 배포를 위한 절대 경로 보정
 			$.ajaxPrefilter(function(options) {
-				if (options.url && options.url.charAt(0) === '/' &&
-					options.url.indexOf('/pokemonshowdown/') !== 0) {
+				if (!options.url || options.url.charAt(0) !== '/') return;
+				if (options.url.startsWith('/~~')) {
+					// PS 서버 action URL은 play.pokemonshowdown.com으로 리다이렉트
+					options.url = 'https://play.pokemonshowdown.com' + options.url;
+				} else if (options.url.indexOf('/pokemonshowdown/') !== 0) {
 					options.url = '/pokemonshowdown' + options.url;
 				}
 			});
@@ -141,6 +144,39 @@
 						Storage.whenTeamsLoaded.load();
 					}
 				}, 1000);
+				// 한국어 포켓몬 이름으로 인한 아이콘 표시 오류 수정
+				// toID()가 한국어 문자를 제거하므로 BattleAliases를 통해 영어 ID로 변환
+				setTimeout(function() {
+					if (typeof Dex !== 'undefined' && Dex.getPokemonIcon) {
+						var _origGetIcon = Dex.getPokemonIcon.bind(Dex);
+						Dex.getPokemonIcon = function(pokemon, facingLeft) {
+							if (pokemon && window.BattleAliases) {
+								var species = null;
+								if (typeof pokemon === 'object' && pokemon !== null) {
+									species = pokemon.speciesForme || pokemon.species || null;
+								} else if (typeof pokemon === 'string') {
+									species = pokemon;
+								}
+								if (species) {
+									// toID 결과가 비어 있으면 (한국어 이름) BattleAliases에서 조회
+									var id = species.toLowerCase().replace(/[^a-z0-9]+/g, '');
+									if (!id) {
+										var koKey = species.toLowerCase();
+										var englishId = window.BattleAliases[koKey];
+										if (englishId) {
+											if (typeof pokemon === 'object') {
+												pokemon = Object.assign({}, pokemon, { species: englishId, speciesForme: englishId });
+											} else {
+												pokemon = englishId;
+											}
+										}
+									}
+								}
+							}
+							return _origGetIcon(pokemon, facingLeft);
+						};
+					}
+				}, 2000);
 			}
 		</script>
 
