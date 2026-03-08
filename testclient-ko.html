@@ -156,26 +156,36 @@
 						}
 					}
 				}, 3000);
-				// BattleStaticData.prototype.get 패치:
-				// ko-desc.js가 name을 한국어로 변경하여 dex.species.get("다크라이") 등이 실패함.
-				// 한국어 이름으로 조회 시 BattleAliases로 영어 ID를 찾아 재조회.
+				// dex.species.get 직접 패치:
+				// Dex.species.get은 own property이므로 prototype 패치가 불가.
+				// 직접 교체하고 Dex.forGen도 인터셉트하여 젠별 dex에도 적용.
 				setTimeout(function() {
 					if (typeof Dex === 'undefined') return;
 					var koStrip = function(s) {
 						return ('' + s).toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
 					};
-					// Patch the prototype shared by species/moves/items/abilities data accessors
-					var proto = Dex.species && Object.getPrototypeOf(Dex.species);
-					if (proto && proto.get) {
-						var _origProtoGet = proto.get;
-						proto.get = function(name) {
-							var result = _origProtoGet.call(this, name);
+					function patchDexSpeciesGet(dataObj) {
+						if (!dataObj || !dataObj.get || dataObj.__koPatchedGet) return;
+						var orig = dataObj.get;
+						dataObj.get = function(name) {
+							var result = orig.call(this, name);
 							if (!result.exists && typeof name === 'string' && window.BattleAliases) {
 								var koKey = koStrip(name);
 								var englishId = koKey && window.BattleAliases[koKey];
-								if (englishId) result = _origProtoGet.call(this, englishId);
+								if (englishId) result = orig.call(this, englishId);
 							}
 							return result;
+						};
+						dataObj.__koPatchedGet = true;
+					}
+					patchDexSpeciesGet(Dex.species);
+					// Dex.forGen이 반환하는 젠별 dex에도 적용
+					if (Dex.forGen) {
+						var _origForGen = Dex.forGen.bind(Dex);
+						Dex.forGen = function(gen) {
+							var genDex = _origForGen(gen);
+							if (genDex && genDex.species) patchDexSpeciesGet(genDex.species);
+							return genDex;
 						};
 					}
 				}, 4000);
