@@ -20,6 +20,7 @@
 				scriptEl.src = src.replace(/.*\/(data|js)\//g, 'https://play.pokemonshowdown.com/$1/');
 				document.head.appendChild(scriptEl);
 			}
+			Config.server = Config.defaultserver;
 		</script>
 		<!--[if lte IE 8]><script>
 			Config.oldie = true;
