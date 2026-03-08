@@ -125,6 +125,17 @@
 		<script>
 			window.onload = () => {
 				window.app = new App();
+				// crossdomain.php rejects non-psim.us hosts (GitHub Pages).
+				// Manually trigger Storage.whenPrefsLoaded if the cross-origin
+				// iframe mechanism doesn't respond within 1 second.
+				setTimeout(function() {
+					if (!Storage.whenPrefsLoaded.isLoaded) {
+						Storage.whenPrefsLoaded.load();
+					}
+					if (!Storage.whenTeamsLoaded.isLoaded) {
+						Storage.whenTeamsLoaded.load();
+					}
+				}, 1000);
 			}
 		</script>
 
