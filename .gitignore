@@ -49,3 +49,10 @@ npm-debug.log
 /teams.pokemonshowdown.com/caches/
 /teams.pokemonshowdown.com/index.html
 /teams.pokemonshowdown.com/ads.txt
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
