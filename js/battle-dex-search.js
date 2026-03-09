@@ -1309,22 +1309,30 @@ var isAAA=format==='almostanyability'||format.includes('aaa');
 var dex=this.dex;
 var species=dex.species.get(this.species);
 var abilitySet=[['header',"Abilities"]];
-
+var koAbilToId=function(name){
+if(!name)return'';
+if(/[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(name)&&window.BattleAliases){
+var k=name.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g,'');
+var id=window.BattleAliases[k];
+if(id)return id;
+}
+return toID(name);
+};
 if(species.isMega){
 abilitySet.unshift(['html',"Will be <strong>"+species.abilities['0']+"</strong> after Mega Evolving."]);
 species=dex.species.get(species.baseSpecies);
 }
-abilitySet.push(['ability',toID(species.abilities['0'])]);
+abilitySet.push(['ability',koAbilToId(species.abilities['0'])]);
 if(species.abilities['1']){
-abilitySet.push(['ability',toID(species.abilities['1'])]);
+abilitySet.push(['ability',koAbilToId(species.abilities['1'])]);
 }
 if(species.abilities['H']){
 abilitySet.push(['header',"Hidden Ability"]);
-abilitySet.push(['ability',toID(species.abilities['H'])]);
+abilitySet.push(['ability',koAbilToId(species.abilities['H'])]);
 }
 if(species.abilities['S']){
 abilitySet.push(['header',"Special Event Ability"]);
-abilitySet.push(['ability',toID(species.abilities['S'])]);
+abilitySet.push(['ability',koAbilToId(species.abilities['S'])]);
 }
 if(isAAA||format.includes('metronomebattle')||isHackmons){
 var abilities=[];
