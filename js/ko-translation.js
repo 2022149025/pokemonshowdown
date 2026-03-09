@@ -503,17 +503,25 @@ function patchWhenReady(patchFn) {
 })();
 
 // 배틀 로그 한국어 패치
+// BattleTextNotAFD를 직접 패치: setAFD()가 BattleText = BattleTextNotAFD를 실행하므로
+// BattleText 대신 BattleTextNotAFD를 패치해야 async 로드 후에도 덮어쓰이지 않음
 (function() {
 	var applied = false;
-	patchWhenReady(function() {
-		if (typeof BattleText === 'undefined' || typeof KoBattleText === 'undefined') return false;
-		if (applied) return true;
+	function applyKoPatch(target) {
 		for (var section in KoBattleText) {
-			if (!BattleText[section]) BattleText[section] = {};
+			if (!target[section]) target[section] = {};
 			var koSection = KoBattleText[section];
 			for (var key in koSection) {
-				BattleText[section][key] = koSection[key];
+				target[section][key] = koSection[key];
 			}
+		}
+	}
+	patchWhenReady(function() {
+		if (typeof BattleTextNotAFD === 'undefined' || typeof KoBattleText === 'undefined') return false;
+		if (applied) return true;
+		applyKoPatch(BattleTextNotAFD);
+		if (typeof BattleText !== 'undefined' && BattleText !== BattleTextNotAFD) {
+			applyKoPatch(BattleText);
 		}
 		applied = true;
 		console.log('[한글화] BattleText 한국어 패치 완료');
