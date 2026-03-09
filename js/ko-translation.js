@@ -502,3 +502,27 @@
 		}, 200);
 	}
 })();
+
+// 배틀 로그 한국어 패치
+(function() {
+	function patchBattleText() {
+		if (typeof BattleText === 'undefined') return false;
+		if (typeof KoBattleText === 'undefined') return false;
+		if (BattleText.__koPatchApplied) return true;
+		for (var section in KoBattleText) {
+			if (!BattleText[section]) BattleText[section] = {};
+			var koSection = KoBattleText[section];
+			for (var key in koSection) {
+				BattleText[section][key] = koSection[key];
+			}
+		}
+		BattleText.__koPatchApplied = true;
+		console.log('[한글화] BattleText 한국어 패치 완료');
+		return true;
+	}
+	if (!patchBattleText()) {
+		var _btIv = setInterval(function() {
+			if (patchBattleText()) clearInterval(_btIv);
+		}, 200);
+	}
+})();
