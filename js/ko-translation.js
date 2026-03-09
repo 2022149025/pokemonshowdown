@@ -464,51 +464,50 @@
 		return copy;
 	}
 
-	var _interval = setInterval(function() {
-		if (typeof DexSearch === 'undefined') return;
-		if (DexSearch.prototype.__koSpeciesPatched) { clearInterval(_interval); return; }
+	patchWhenReady(function() {
+		if (typeof DexSearch === 'undefined') return false;
+		if (DexSearch.prototype.__koSpeciesPatched) return true;
 		var _origGetTypedSearch = DexSearch.prototype.getTypedSearch;
 		DexSearch.prototype.getTypedSearch = function(searchType, format, speciesOrSet) {
 			return _origGetTypedSearch.call(this, searchType, format, resolveKoSpecies(speciesOrSet));
 		};
 		DexSearch.prototype.__koSpeciesPatched = true;
-		clearInterval(_interval);
 		console.log('[한글화] DexSearch 한국어 종족명 패치 완료');
-	}, 200);
+		return true;
+	});
 })();
-// GitHub Pages 로그인 CORS 수정:
-// /~~showdown/action.php는 github.io에서 CORS 차단됨.
-// /action.php는 Access-Control-Allow-Origin: * 헤더를 제공함.
+
+// 공통 헬퍼: 조건이 충족될 때까지 200ms 간격으로 patchFn 재시도
+function patchWhenReady(patchFn) {
+	if (!patchFn()) {
+		var iv = setInterval(function() { if (patchFn()) clearInterval(iv); }, 200);
+	}
+}
+
+// GitHub Pages 로그인 CORS 수정: action.php를 Cloudflare Worker 프록시로 라우팅
 (function() {
 	var ACTION_URL = 'https://ps-login-proxy.kimcodns.workers.dev/~~showdown/action.php';
-	function patchGetActionPHP() {
-		// 프로토타입 레벨 패치 (App.prototype.User 접근 가능한 경우)
+	patchWhenReady(function() {
 		if (typeof App !== 'undefined' && App.prototype && App.prototype.User && App.prototype.User.prototype) {
 			App.prototype.User.prototype.getActionPHP = function() { return ACTION_URL; };
 			console.log('[한글화] getActionPHP 프로토타입 패치 완료');
 			return true;
 		}
-		// 인스턴스 레벨 패치 (app.user가 이미 생성된 경우)
 		if (typeof app !== 'undefined' && app && app.user) {
 			app.user.getActionPHP = function() { return ACTION_URL; };
 			console.log('[한글화] getActionPHP 인스턴스 패치 완료');
 			return true;
 		}
 		return false;
-	}
-	if (!patchGetActionPHP()) {
-		var _loginPatchIv = setInterval(function() {
-			if (patchGetActionPHP()) clearInterval(_loginPatchIv);
-		}, 200);
-	}
+	});
 })();
 
 // 배틀 로그 한국어 패치
 (function() {
-	function patchBattleText() {
-		if (typeof BattleText === 'undefined') return false;
-		if (typeof KoBattleText === 'undefined') return false;
-		if (BattleText.__koPatchApplied) return true;
+	var applied = false;
+	patchWhenReady(function() {
+		if (typeof BattleText === 'undefined' || typeof KoBattleText === 'undefined') return false;
+		if (applied) return true;
 		for (var section in KoBattleText) {
 			if (!BattleText[section]) BattleText[section] = {};
 			var koSection = KoBattleText[section];
@@ -516,13 +515,8 @@
 				BattleText[section][key] = koSection[key];
 			}
 		}
-		BattleText.__koPatchApplied = true;
+		applied = true;
 		console.log('[한글화] BattleText 한국어 패치 완료');
 		return true;
-	}
-	if (!patchBattleText()) {
-		var _btIv = setInterval(function() {
-			if (patchBattleText()) clearInterval(_btIv);
-		}, 200);
-	}
+	});
 })();
