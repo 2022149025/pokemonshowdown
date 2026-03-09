@@ -480,7 +480,7 @@
 // /~~showdown/action.php는 github.io에서 CORS 차단됨.
 // /action.php는 Access-Control-Allow-Origin: * 헤더를 제공함.
 (function() {
-	var ACTION_URL = 'https://play.pokemonshowdown.com/action.php';
+	var ACTION_URL = 'https://ps-login-proxy.kimcodns.workers.dev/~~showdown/action.php';
 	function patchGetActionPHP() {
 		// 프로토타입 레벨 패치 (App.prototype.User 접근 가능한 경우)
 		if (typeof App !== 'undefined' && App.prototype && App.prototype.User && App.prototype.User.prototype) {
