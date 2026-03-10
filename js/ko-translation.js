@@ -502,6 +502,30 @@ function patchWhenReady(patchFn) {
 	});
 })();
 
+// Storage.packTeam 패치: 한글 아이템/특성/기술명 → 영어 ID 변환 후 저장
+// 문제: unpackTeam이 Dex에서 한글명으로 복원 → packTeam에서 toID(한글)='' → 빈값으로 저장됨
+(function() {
+	patchWhenReady(function() {
+		if (typeof Storage === 'undefined' || !Storage.packTeam) return false;
+		if (Storage._koPackPatch) return true;
+		var _orig = Storage.packTeam;
+		Storage.packTeam = function(team) {
+			if (!team || !window.resolveKoreanName) return _orig.call(this, team);
+			var patched = team.map(function(set) {
+				var s = Object.assign({}, set);
+				if (s.item) s.item = window.resolveKoreanName(s.item);
+				if (s.ability) s.ability = window.resolveKoreanName(s.ability);
+				if (s.moves) s.moves = s.moves.map(function(m) { return m ? window.resolveKoreanName(m) : m; });
+				return s;
+			});
+			return _orig.call(this, patched);
+		};
+		Storage._koPackPatch = true;
+		console.log('[한글화] Storage.packTeam 한글명 변환 패치 완료');
+		return true;
+	});
+})();
+
 // 배틀 로그 한국어 패치
 // BattleTextNotAFD를 직접 패치: setAFD()가 BattleText = BattleTextNotAFD를 실행하므로
 // BattleText 대신 BattleTextNotAFD를 패치해야 async 로드 후에도 덮어쓰이지 않음
