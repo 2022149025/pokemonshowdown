@@ -4206,10 +4206,10 @@
         "name": "오거폰(우물의 가면)"
     },
     "ogerponhearthflame": {
-        "name": "오거폰(맹염의 가면)"
+        "name": "오거폰(화덕의 가면)"
     },
     "ogerponcornerstone": {
-        "name": "오거폰(바위의 가면)"
+        "name": "오거폰(주춧돌의 가면)"
     },
     "ogerpontealtera": {
         "name": "오거폰(벽록의 가면)(테라스탈)"
@@ -4218,10 +4218,10 @@
         "name": "오거폰(우물의 가면)(테라스탈)"
     },
     "ogerponhearthflametera": {
-        "name": "오거폰(맹염의 가면)(테라스탈)"
+        "name": "오거폰(화덕의 가면)(테라스탈)"
     },
     "ogerponcornerstonetera": {
-        "name": "오거폰(바위의 가면)(테라스탈)"
+        "name": "오거폰(주춧돌의 가면)(테라스탈)"
     },
     "archaludon": {
         "name": "브리두라스"

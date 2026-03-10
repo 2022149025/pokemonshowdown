@@ -502,6 +502,28 @@ function patchWhenReady(patchFn) {
 	});
 })();
 
+// Search.renderPokemonRow 패치: 한글 이름은 forme 분리 없이 전체 이름 표시
+// 문제: tagStart = name.length(한글) - forme.length(영어) - 1 → 음수/오계산 → 이름 깨짐
+(function() {
+	patchWhenReady(function() {
+		if (typeof BattleSearch === 'undefined' || !BattleSearch.prototype) return false;
+		if (BattleSearch._koRowPatch) return true;
+		var _orig = BattleSearch.prototype.renderPokemonRow;
+		BattleSearch.prototype.renderPokemonRow = function(pokemon, matchStart, matchLength, errorMessage, attrs) {
+			// 한글 이름이면 forme 분리 없이 전체 이름 표시되도록 forme 임시 제거
+			if (pokemon && pokemon.name && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(pokemon.name) && pokemon.forme) {
+				var fakeObj = Object.create(pokemon);
+				fakeObj.forme = '';
+				return _orig.call(this, fakeObj, matchStart, matchLength, errorMessage, attrs);
+			}
+			return _orig.call(this, pokemon, matchStart, matchLength, errorMessage, attrs);
+		};
+		BattleSearch._koRowPatch = true;
+		console.log('[한글화] BattleSearch.renderPokemonRow 한글명 패치 완료');
+		return true;
+	});
+})();
+
 // Dex.getPokemonIcon 패치: 한글 포켓몬 이름 → species 객체 변환 후 아이콘 조회
 // 문제: getPokemonIcon('폴리곤2') → toID('폴리곤2') = '2' → 잘못된 아이콘
 (function() {
