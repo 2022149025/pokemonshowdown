@@ -11,7 +11,7 @@
     "opposingParty": "상대 포켓몬",
     "turn": "== 턴 [NUMBER] ==",
     "switchIn": "[TRAINER]가 [FULLNAME]을 내보냈다!",
-    "switchInOwn": "가라! [FULLNAME]!",
+    "switchInOwn": "가랏 [FULLNAME]!",
     "switchOut": "[TRAINER]가 [NICKNAME]을(를) 불러들였다!",
     "switchOutOwn": "[NICKNAME], 돌아와!",
     "drag": "[FULLNAME]이(가) 끌려나왔다!",
@@ -2726,7 +2726,7 @@
     "descGen5": "이 포켓몬이 상대 포켓몬의 기술의 대상이 되면, 그 기술의 PP가 추가로 1 감소한다. 봉인과 가로채기도 상대 포켓몬이 사용했을 때 추가로 PP가 1 감소한다.",
     "descGen4": "이 포켓몬이 다른 포켓몬의 기술의 대상이 되면, 그 기술의 PP가 추가로 1 감소한다.",
     "shortDescGen4": "이 포켓몬이 기술의 대상이 되면, 그 기술의 PP가 추가로 1 감소한다.",
-    "start": "  [POKEMON]은 압력을 발휘하고 있다!"
+    "start": "  [POKEMON]은 프레셔를 발산하고 있다!"
   },
   "protean": {
     "descGen8": "이 포켓몬의 타입은 사용하려는 기술의 타입과 일치하도록 변한다. 이 효과는 기술의 타입을 변경하는 모든 효과 후에 적용된다.",
