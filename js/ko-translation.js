@@ -502,6 +502,25 @@ function patchWhenReady(patchFn) {
 	});
 })();
 
+// Dex.getPokemonIcon 패치: 한글 포켓몬 이름 → species 객체 변환 후 아이콘 조회
+// 문제: getPokemonIcon('폴리곤2') → toID('폴리곤2') = '2' → 잘못된 아이콘
+(function() {
+	patchWhenReady(function() {
+		if (typeof Dex === 'undefined' || !Dex.getPokemonIcon) return false;
+		if (Dex._koIconPatch) return true;
+		var _orig = Dex.getPokemonIcon.bind(Dex);
+		Dex.getPokemonIcon = function(pokemon, facingLeft) {
+			if (typeof pokemon === 'string' && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(pokemon)) {
+				var species = Dex.species.get(pokemon);
+				if (species && species.id) pokemon = species;
+			}
+			return _orig(pokemon, facingLeft);
+		};
+		Dex._koIconPatch = true;
+		return true;
+	});
+})();
+
 // Storage.packTeam 패치: 한글 아이템/특성/기술명 → 영어 ID 변환 후 저장
 // 문제: unpackTeam이 Dex에서 한글명으로 복원 → packTeam에서 toID(한글)='' → 빈값으로 저장됨
 (function() {
