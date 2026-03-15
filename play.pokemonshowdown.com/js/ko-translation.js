@@ -477,11 +477,12 @@
 	});
 
 	// DexSearch.find 패치: 한국어 부분 문자열 검색 지원
-	// '디'→디알가/디안시, '불꽃'→불꽃승이/불꽃타입포켓몬/불꽃펀치 등
+	// 예) '쳄' 입력 시 특성 Filter 버튼 + 쳄이 들어간 포켓몬/기술 목록
+(function() {
 	patchWhenReady(function() {
 		if (typeof DexSearch === 'undefined') return false;
 		if (DexSearch._koFindPatch) return true;
-		var KO_RE = /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/;
+		var KO_RE = /[가-힣ㄱ-ㆎㅏ-ㅣ]/;
 
 		// 한국어 타입명 → 영어 ID
 		var KO_TYPES = {
@@ -534,16 +535,23 @@
 				}
 			}
 
-			if (\!searchType || searchType === 'pokemon') {
-				// 특성 한글명 검색 시 영어 ID로 네이티브 검색 위임 (Filter 버튼 UI 포함)
+			if (!searchType || searchType === 'pokemon') {
+				// 특성 부분 매칭: 특성명에 q가 포함된 모든 특성을 ability 행으로 추가 (Filter 버튼 UI)
 				if (kd.abilities) {
+					var abilRows = [];
 					for (var abId in kd.abilities) {
 						var abName = kd.abilities[abId] && kd.abilities[abId].name;
-						if (\!abName || \!abName.includes(q)) continue;
-						return _origFind.call(this, abId);
+						if (!abName || !abName.includes(q)) continue;
+						abilRows.push(['ability', abId, abName.indexOf(q), q.length]);
+					}
+					if (abilRows.length) {
+						results.push(['header', '특성']);
+						results = results.concat(abilRows);
 					}
 				}
+				// 포켓몬 이름 검색
 				searchTable(kd.pokemon, 'pokemon', 'Pokémon');
+				// 타입 필터
 				addTypeFilter('pokemon');
 			}
 			if (!searchType || searchType === 'move') {
