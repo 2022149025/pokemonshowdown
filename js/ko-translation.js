@@ -550,6 +550,19 @@
 						results = results.concat(abilRows);
 					}
 				}
+				// 기술 부분 매칭: 기술명에 q가 포함된 모든 기술을 move 행으로 추가 (Filter 버튼 UI)
+				if (kd.moves) {
+					var moveRows = [];
+					for (var mvId in kd.moves) {
+						var mvName = kd.moves[mvId] && kd.moves[mvId].name;
+						if (!mvName || !mvName.includes(q)) continue;
+						moveRows.push(['move', mvId, mvName.indexOf(q), q.length]);
+					}
+					if (moveRows.length) {
+						results.push(['header', '기술']);
+						results = results.concat(moveRows);
+					}
+				}
 				// 포켓몬 이름 검색
 				searchTable(kd.pokemon, 'pokemon', 'Pokémon');
 				// 타입 필터

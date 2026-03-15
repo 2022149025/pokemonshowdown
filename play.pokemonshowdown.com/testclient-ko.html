@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta id="viewport" name="viewport" content="width=device-width" />
+		<title>포켓몬 쇼다운! (한글판)</title>
+		<link rel="shortcut icon" href="favicon.ico" id="dynamic-favicon" />
+		<link rel="stylesheet" href="style/battle.css" />
+		<link rel="stylesheet" href="style/client.css" />
+		<link rel="stylesheet" href="style/sim-types.css" />
+		<link rel="stylesheet" href="style/utilichart.css" />
+		<link rel="stylesheet" href="style/font-awesome.css" />
+		<link rel="stylesheet" href="style/ko-custom.css" />
+		<meta name="robots" content="noindex" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+		<script src="https://play.pokemonshowdown.com/config/config.js"></script>
+		<script>
+			function loadRemoteData(src) {
+				var scriptEl = document.createElement('script');
+				scriptEl.src = src.replace(/.*\/(data|js)\//g, 'https://play.pokemonshowdown.com/$1/');
+				document.head.appendChild(scriptEl);
+			}
+			Config.server = Config.defaultserver;
+		</script>
+		<!--[if lte IE 8]><script>
+			Config.oldie = true;
+		</script><![endif]-->
+	</head>
+	<body>
+		<div id="header" class="header">
+			<img class="logo" src="pokemonshowdownbeta.png" alt="포켓몬 쇼다운! (한글판)" width="146" height="44" /><div class="maintabbarbottom"></div>
+		</div>
+		<div class="ps-room scrollable" id="mainmenu"><div class="mainmenuwrapper">
+			<div class="leftmenu">
+				<div class="activitymenu">
+					<div class="pmbox">
+						<div class="pm-window news-embed">
+							<h3><button class="closebutton" tabindex="-1" aria-label="닫기"><i class="fa fa-times-circle"></i></button><button class="minimizebutton" tabindex="-1" aria-label="최소화"><i class="fa fa-minus-circle"></i></button>최신 뉴스</h3>
+							<div class="pm-log" style="max-height:none">
+								<div class="newsentry"><h4>한국어 포켓몬 쇼다운</h4><p>포센연에서 제작한 쇼다운 한글화 페이지입니다.<br><br>아직 미완성이라 외부 배포 자제 부탁드립니다.<br><br>오역이나 버그 제보 환영합니다.<br><br>제보나 문의사항은 kimcodns@yonsei.ac.kr이나 카카오톡 'kcu0308'로 하시면 됩니다.</p></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="mainmenu">
+					<div id="loading-message" class="mainmessage">초기화 중... <noscript>실패<br /><br />포켓몬 쇼다운은 JavaScript가 필요합니다.</noscript></div>
+				</div>
+			</div>
+			<div class="rightmenu">
+			</div>
+			<div class="mainmenufooter">
+				<small><a href="//pokemonshowdown.com/" target="_blank"><strong>Pok&eacute;mon Showdown</strong></a> | <a href="http://smogon.com/" target="_blank"><strong>Smogon</strong></a><br><a href="//pokemonshowdown.com/dex/" target="_blank">포켓몬 도감</a> | <a href="//pokemonshowdown.com/replay/" target="_blank">리플레이</a> | <a href="//pokemonshowdown.com/rules" target="_blank">규칙</a></small> | <small><a href="//pokemonshowdown.com/forums/" target="_blank">포럼</a></small>
+			</div>
+		</div></div>
+		<script>
+			document.getElementById('loading-message').innerHTML += ' 완료<br />라이브러리 로딩 중...';
+		</script>
+		<script nomodule src="js/lib/ps-polyfill.js"></script>
+		<script src="js/lib/jquery-2.2.4.min.js"></script>
+		<script src="js/lib/jquery-cookie.js"></script>
+		<script src="js/lib/autoresize.jquery.min.js"></script>
+		<script src="js/battle-sound.js"></script>
+		<script src="js/lib/html-css-sanitizer-minified.js"></script>
+		<script src="js/lib/lodash.core.js"></script>
+		<script src="js/lib/backbone.js"></script>
+		<script src="js/lib/d3.v3.min.js"></script>
+
+		<script>
+			document.getElementById('loading-message').innerHTML += ' 완료<br />데이터 로딩 중...';
+			window.exports = window;
+			// GitHub Pages 서브디렉토리 배포를 위한 절대 경로 보정
+			$.ajaxPrefilter(function(options) {
+				if (!options.url) return;
+				// /~~showdown/action.php (상대) 또는 https://.../~~showdown/action.php (절대) 모두 처리
+				// ~~showdown 경유는 github.io origin에서 CORS 차단됨 → 루트 /action.php로 교체
+				if (/\/~~[^\/]*\/action\.php/.test(options.url)) {
+					options.url = options.url.replace(/\/~~[^\/]*\/action\.php/, '/action.php');
+					// 절대 URL이 아니면 절대 URL로 변환
+					if (!/^https?:\/\//.test(options.url)) {
+						options.url = 'https://play.pokemonshowdown.com' + options.url;
+					}
+					return;
+				}
+				if (options.url.charAt(0) !== '/') return;
+				if (options.url.indexOf('/pokemonshowdown/') !== 0) {
+					options.url = '/pokemonshowdown' + options.url;
+				}
+			});
+		</script>
+
+		<!-- fallback for if you've never done a full build -->
+		<script src="js/server/chat-formatter.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="js/battledata.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/text.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/pokedex-mini.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/pokedex-mini-bw.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/typechart.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="js/battle.js" onerror="alert('먼저 `node build` 명령으로 클라이언트를 빌드해야 합니다.')"></script>
+		<script src="js/lib/sockjs-1.4.0-nwjsfix.min.js"></script>
+		<script src="js/lib/color-thief.min.js"></script>
+
+		<script>
+			document.getElementById('loading-message').innerHTML += ' 완료<br />클라이언트 로딩 중...';
+		</script>
+
+		<script src="js/client.js"></script>
+		<script src="js/client-topbar.js"></script>
+		<script src="js/client-mainmenu.js"></script>
+		<script src="js/client-teambuilder.js"></script>
+		<script src="js/client-ladder.js"></script>
+		<script src="js/client-chat.js"></script>
+		<script src="js/client-chat-tournament.js"></script>
+		<script src="js/battle-tooltips.js"></script>
+		<script src="js/client-battle.js"></script>
+		<script src="js/client-rooms.js"></script>
+		<script src="js/storage.js"></script>
+		<script src="data/graphics.js" onerror="loadRemoteData(this.src)"></script>
+
+		<script src="data/pokedex.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/moves.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/items.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/abilities.js" onerror="loadRemoteData(this.src)"></script>
+
+		<script src="data/search-index.js" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/teambuilder-tables.js" onerror="loadRemoteData(this.src)"></script>
+		<script>if(typeof BattleTeambuilderTable==='undefined'){document.write('\x3Cscript src="https://play.pokemonshowdown.com/data/teambuilder-tables.js">\x3C/script>')}</script>
+		<script src="js/battle-dex-search.js"></script>
+		<script src="js/search.js"></script>
+
+		<script src="data/aliases.js" async="async" onerror="loadRemoteData(this.src)"></script>
+		<script src="data/commands.js" async="async" onerror="loadRemoteData(this.src)"></script>
+
+		<!-- 한글화 스크립트 로딩 -->
+		<script src="js/ko-desc.js"></script>
+		<script src="js/ko-translation.js"></script>
+
+		<script>
+			window.onload = () => {
+				// Fix Backbone history root for GitHub Pages subdirectory deployment
+				var _origStart = Backbone.History.prototype.start;
+				Backbone.History.prototype.start = function(options) {
+					return _origStart.call(this, Object.assign({ root: '/pokemonshowdown/' }, options || {}));
+				};
+				window.app = new App();
+				// login action.php CORS 수정:
+				// GitHub Pages에서 /~~showdown/action.php는 CORS 차단됨.
+				// /action.php는 Access-Control-Allow-Origin: * 헤더가 있어 허용됨.
+				if (app.user) {
+					app.user.getActionPHP = function() {
+						return 'https://play.pokemonshowdown.com/action.php';
+					};
+				}
+				// crossdomain.php rejects non-psim.us hosts (GitHub Pages).
+				// Manually trigger Storage.whenPrefsLoaded if the cross-origin
+				// iframe mechanism doesn't respond within 1 second.
+				setTimeout(function() {
+					if (!Storage.whenPrefsLoaded.isLoaded) {
+						Storage.whenPrefsLoaded.load();
+					}
+					if (!Storage.whenTeamsLoaded.isLoaded) {
+						Storage.whenTeamsLoaded.load();
+					}
+				}, 1000);
+				// action.php CORS 차단 우회:
+				// 서버가 |challstr|을 보내면 클라이언트는 action.php에 POST하여
+				// app.user.loaded = true를 설정하는데, GitHub Pages에선 CORS로 차단됨.
+				// 3초 후에도 loaded가 false이면 강제로 true 설정하고 userbar 업데이트.
+				setTimeout(function() {
+					if (typeof app !== 'undefined' && app.user && !app.user.loaded) {
+						app.user.loaded = true;
+						if (app.topbar && app.topbar.updateUserbar) {
+							app.topbar.updateUserbar();
+						}
+					}
+				}, 3000);
+				// dex.species.get 직접 패치:
+				// Dex.species.get은 own property이므로 직접 교체.
+				// setInterval로 Dex/BattleAliases 준비될 때까지 재시도.
+				(function() {
+					var koStrip = function(s) {
+						return ('' + s).toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+					};
+					function patchDexSpeciesGet(dataObj) {
+						if (!dataObj || !dataObj.get || dataObj.__koPatchedGet) return;
+						var orig = dataObj.get;
+						dataObj.get = function(name) {
+							var result = orig.call(this, name);
+							if (!result.exists && typeof name === 'string' && window.BattleAliases) {
+								var koKey = koStrip(name);
+								var englishId = koKey && window.BattleAliases[koKey];
+								if (englishId) result = orig.call(this, englishId);
+							}
+							return result;
+						};
+						dataObj.__koPatchedGet = true;
+					}
+					var _tryCount = 0;
+					var _patchInterval = setInterval(function() {
+						_tryCount++;
+						if (_tryCount > 40) { clearInterval(_patchInterval); return; } // 20초 후 포기
+						if (typeof Dex === 'undefined' || !Dex.species || !window.BattleAliases) return;
+						patchDexSpeciesGet(Dex.species);
+						// Dex.forGen이 반환하는 젠별 dex에도 적용
+						if (Dex.forGen && !Dex.__koForGenPatched) {
+							var _origForGen = Dex.forGen.bind(Dex);
+							Dex.forGen = function(gen) {
+								var genDex = _origForGen(gen);
+								if (genDex && genDex.species) patchDexSpeciesGet(genDex.species);
+								return genDex;
+							};
+							Dex.__koForGenPatched = true;
+						}
+						clearInterval(_patchInterval);
+					}, 500);
+				})();
+				// Teambuilder setPokemon 패치: 한국어 이름 → 영어 이름으로 정규화
+				// set.species에 한국어가 저장되면 서버 검증 오류 및 스프라이트 오류 발생
+				(function() {
+					function makeNormalizedSetPokemon(orig) {
+						return function(val) {
+							if (typeof val === 'string' && window.BattleAliases) {
+								var id = val.toLowerCase().replace(/[^a-z0-9]+/g, '');
+								if (!id) {
+									var dex = (this.curTeam && this.curTeam.dex) || window.Dex;
+									var sp = dex && dex.species && dex.species.get(val);
+									if (sp && sp.exists) {
+										val = sp.baseSpecies + (sp.forme ? '-' + sp.forme : '');
+									} else {
+										var koKey = val.toLowerCase().replace(/[^a-z0-9가-힣ㄱ-ㆎㅏ-ㅣ]+/g, '');
+										val = window.BattleAliases[koKey] || val;
+									}
+								}
+							}
+							return orig.call(this, val);
+						};
+					}
+					var _tbInterval = setInterval(function() {
+						if (window.TeambuilderRoom && TeambuilderRoom.prototype.setPokemon && !TeambuilderRoom.prototype.__koPatchedSetPokemon) {
+							TeambuilderRoom.prototype.setPokemon = makeNormalizedSetPokemon(TeambuilderRoom.prototype.setPokemon);
+							TeambuilderRoom.prototype.__koPatchedSetPokemon = true;
+							clearInterval(_tbInterval);
+							return;
+						}
+						if (window.app && app.rooms && app.rooms['teambuilder']) {
+							var tb = app.rooms['teambuilder'];
+							if (!tb.__koPatchedSetPokemon && tb.setPokemon) {
+								tb.setPokemon = makeNormalizedSetPokemon(tb.setPokemon);
+								tb.__koPatchedSetPokemon = true;
+								clearInterval(_tbInterval);
+							}
+						}
+					}, 500);
+				})();
+				// 한국어 포켓몬 이름으로 인한 아이콘 표시 오류 수정
+				// toID()가 한국어 문자를 제거하므로 BattleAliases를 통해 영어 ID로 변환
+				setTimeout(function() {
+					if (typeof Dex !== 'undefined' && Dex.getPokemonIcon) {
+						var _origGetIcon = Dex.getPokemonIcon.bind(Dex);
+						Dex.getPokemonIcon = function(pokemon, facingLeft) {
+							if (pokemon && window.BattleAliases) {
+								var species = null;
+								if (typeof pokemon === 'object' && pokemon !== null) {
+									species = pokemon.speciesForme || pokemon.species || null;
+								} else if (typeof pokemon === 'string') {
+									species = pokemon;
+								}
+								if (species) {
+									// toID 결과가 비어 있으면 (한국어 이름) BattleAliases에서 조회
+									var id = species.toLowerCase().replace(/[^a-z0-9]+/g, '');
+									if (!id) {
+										var koKey = species.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+										var englishId = window.BattleAliases[koKey];
+										if (englishId) {
+											if (typeof pokemon === 'object') {
+												pokemon = Object.assign({}, pokemon, { species: englishId, speciesForme: englishId });
+											} else {
+												pokemon = englishId;
+											}
+										}
+									}
+								}
+							}
+							return _origGetIcon(pokemon, facingLeft);
+						};
+					}
+				}, 4000);
+			}
+		</script>
+
+	</body>
+</html>
+
+
