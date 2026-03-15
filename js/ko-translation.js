@@ -475,6 +475,51 @@
 		console.log('[한글화] DexSearch 한국어 종족명 패치 완료');
 		return true;
 	});
+
+	// DexSearch.find 패치: 한국어 부분 문자열 검색 지원
+	// '디'만 쳐도 '디알가', '디안시' 등 한국어 이름에 '디'가 포함된 포켓몬/기술/특성/아이템 표시
+	patchWhenReady(function() {
+		if (typeof DexSearch === 'undefined') return false;
+		if (DexSearch._koFindPatch) return true;
+		var KO_RE = /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/;
+		var _origFind = DexSearch.prototype.find;
+		DexSearch.prototype.find = function(query) {
+			if (!query || !KO_RE.test(query)) return _origFind.call(this, query);
+			var q = query.trim();
+			if (this._koQuery === q && this.results) return false;
+			this._koQuery = q;
+			this.query = q;
+			this.exactMatch = false;
+			var searchType = this.typedSearch ? this.typedSearch.searchType : '';
+			var kd = window._KoData || {};
+			var results = [];
+
+			function searchTable(table, type, header) {
+				if (!table) return;
+				var rows = [];
+				for (var id in table) {
+					var kname = table[id] && table[id].name;
+					if (!kname || !kname.includes(q)) continue;
+					rows.push([type, id, kname.indexOf(q), q.length]);
+				}
+				if (rows.length) {
+					results.push(['header', header]);
+					for (var r = 0; r < rows.length; r++) results.push(rows[r]);
+				}
+			}
+
+			if (!searchType || searchType === 'pokemon') searchTable(kd.pokemon, 'pokemon', 'Pokémon');
+			if (!searchType || searchType === 'move')    searchTable(kd.moves, 'move', '기술');
+			if (!searchType || searchType === 'ability') searchTable(kd.abilities, 'ability', '특성');
+			if (!searchType || searchType === 'item')    searchTable(kd.items, 'item', '아이템');
+
+			this.results = results;
+			return true;
+		};
+		DexSearch._koFindPatch = true;
+		console.log('[한글화] DexSearch 한국어 부분 검색 패치 완료');
+		return true;
+	});
 })();
 
 // 공통 헬퍼: 조건이 충족될 때까지 200ms 간격으로 patchFn 재시도

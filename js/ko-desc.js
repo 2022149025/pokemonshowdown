@@ -13803,6 +13803,9 @@
     window.addEventListener('load', applyDescs);
     setTimeout(applyDescs, 3000);
 
+    // 한국어 검색을 위해 ko 데이터 전역 노출
+    window._KoData = { pokemon: koPokedex, moves: koMoves, items: koItems, abilities: koAbilities };
+
     // 한글 이름 → 영어 ID 변환 헬퍼 함수
     window.resolveKoreanName = function(name, type) {
         if (!name || typeof name !== 'string') return name;
