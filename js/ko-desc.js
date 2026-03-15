@@ -13858,6 +13858,10 @@
             if (!name) return name;
             var id = _toID(name);
             if (!id) return name;
+            // ko-desc 내부 데이터 직접 조회 (BattlePokedex 타이밍 문제 우회)
+            if (koMoves[id] && koMoves[id].name) return koMoves[id].name;
+            if (koItems[id] && koItems[id].name) return koItems[id].name;
+            if (koAbilities[id] && koAbilities[id].name) return koAbilities[id].name;
             try {
                 if (window.BattleMovedex && window.BattleMovedex[id] && window.BattleMovedex[id].name)
                     return window.BattleMovedex[id].name;
@@ -13871,8 +13875,11 @@
 
         function koSpecies(name) {
             if (!name) return name;
+            var id = _toID(name);
+            if (!id) return name;
+            // ko-desc 내부 데이터 직접 조회 (BattlePokedex.name이 영어이거나 미설정인 경우 대비)
+            if (koPokedex[id] && koPokedex[id].name) return koPokedex[id].name;
             try {
-                var id = _toID(name);
                 if (window.BattlePokedex && window.BattlePokedex[id] && window.BattlePokedex[id].name)
                     return window.BattlePokedex[id].name;
             } catch(e) {}
