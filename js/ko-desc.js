@@ -13949,6 +13949,32 @@
                 };
                 proto.pokemonName._koPatch = true;
             }
+
+            // pokemon() 패치: in-battle 포켓몬 참조 한국어 변환
+            // pokemon()은 BattleScene이 인스턴스 오버라이드하지 않으므로 프로토타입 패치 유효
+            // pokemonName()이 영어를 반환해도 여기서 한국어로 변환
+            if (!proto.pokemon._koPatch) {
+                proto.pokemon = function(pokemonId) {
+                    if (!pokemonId) return '';
+                    var side = pokemonId.slice(0, 2);
+                    if (!['p1','p2','p3','p4'].includes(side)) return '???pokemon:' + pokemonId + '???';
+                    // pokemonName은 BattleScene에 의해 인스턴스 오버라이드되어 영어 반환 가능
+                    var name = this.pokemonName(pokemonId);
+                    // 영어명이면 한국어로 변환 시도
+                    try {
+                        var ko = koSpecies(name);
+                        if (ko && ko !== name) {
+                            name = BattleTextParser.escapeReplace ? BattleTextParser.escapeReplace(ko) : ko.replace(/\$/g, '$$$$');
+                        }
+                    } catch(e) {}
+                    var isNear = side === this.perspective || side === BattleTextParser.allyID(side);
+                    var template = (typeof BattleText !== 'undefined' && BattleText['default']) ?
+                        BattleText['default'][isNear ? 'pokemon' : 'opposingPokemon'] : '[NICKNAME]';
+                    if (!template) template = '[NICKNAME]';
+                    return template.replace('[NICKNAME]', name).replace(/\$/g, '$$$$');
+                };
+                proto.pokemon._koPatch = true;
+            }
         }
 
         function patchBattleScene() {
