@@ -13844,4 +13844,145 @@
     window.addEventListener('load', setupMonkeyPatch);
     setTimeout(setupMonkeyPatch, 1000);
     setTimeout(setupMonkeyPatch, 3000);
+
+    // ============================================================
+    // 배틀 로그 한국어 이름 번역 패치
+    // BattleTextParser / BattleScene을 직접 패치하여
+    // 포켓몬·기술·특성·아이템 이름을 한국어로 표시
+    // ============================================================
+    (function() {
+        var _toID = typeof toID === 'function' ? toID :
+            function(t) { if (!t) return ''; return ('' + t).toLowerCase().replace(/[^a-z0-9]+/g, ''); };
+
+        function koLookup(name) {
+            if (!name) return name;
+            var id = _toID(name);
+            if (!id) return name;
+            try {
+                if (window.BattleMovedex && window.BattleMovedex[id] && window.BattleMovedex[id].name)
+                    return window.BattleMovedex[id].name;
+                if (window.BattleItems && window.BattleItems[id] && window.BattleItems[id].name)
+                    return window.BattleItems[id].name;
+                if (window.BattleAbilities && window.BattleAbilities[id] && window.BattleAbilities[id].name)
+                    return window.BattleAbilities[id].name;
+            } catch(e) {}
+            return name;
+        }
+
+        function koSpecies(name) {
+            if (!name) return name;
+            try {
+                var id = _toID(name);
+                if (window.BattlePokedex && window.BattlePokedex[id] && window.BattlePokedex[id].name)
+                    return window.BattlePokedex[id].name;
+            } catch(e) {}
+            return name;
+        }
+
+        function patchBattleTextParser() {
+            if (typeof BattleTextParser === 'undefined' || !BattleTextParser.prototype) return;
+            var proto = BattleTextParser.prototype;
+
+            // effect() 패치: 기술/아이템/특성명 한국어 변환
+            if (!proto.effect._koPatch) {
+                var _origEffect = proto.effect;
+                proto.effect = function(eff) {
+                    var result = _origEffect.call(this, eff);
+                    if (!eff) return result;
+                    try {
+                        var prefix = eff.startsWith('move:') ? 'move' :
+                                     eff.startsWith('item:') ? 'item' :
+                                     eff.startsWith('ability:') ? 'ability' : '';
+                        var id = _toID(result);
+                        if (!id) return result;
+                        if ((prefix === 'move' || !prefix) && window.BattleMovedex && window.BattleMovedex[id] && window.BattleMovedex[id].name)
+                            return window.BattleMovedex[id].name;
+                        if ((prefix === 'item' || !prefix) && window.BattleItems && window.BattleItems[id] && window.BattleItems[id].name)
+                            return window.BattleItems[id].name;
+                        if ((prefix === 'ability' || !prefix) && window.BattleAbilities && window.BattleAbilities[id] && window.BattleAbilities[id].name)
+                            return window.BattleAbilities[id].name;
+                    } catch(e) {}
+                    return result;
+                };
+                proto.effect._koPatch = true;
+            }
+
+            // parseArgs 패치: case 'move'의 기술명(args[2]) 한국어 변환
+            if (!proto.parseArgs._koPatch) {
+                var _origParseArgs = proto.parseArgs;
+                proto.parseArgs = function(args, kwArgs) {
+                    if (args[0] === 'move' && args[2] && window.BattleMovedex) {
+                        try {
+                            var id = _toID(args[2]);
+                            var mv = window.BattleMovedex[id];
+                            if (mv && mv.name) { args = args.slice(0); args[2] = mv.name; }
+                        } catch(e) {}
+                    }
+                    return _origParseArgs.call(this, args, kwArgs);
+                };
+                proto.parseArgs._koPatch = true;
+            }
+
+            // pokemonFull 패치: 교체 시 종족명 한국어 표시
+            if (!proto.pokemonFull._koPatch) {
+                proto.pokemonFull = function(pokemon, details) {
+                    var species = details.split(',')[0];
+                    var rawNick = pokemon.charAt(3) === ':' ? pokemon.slice(4).trim() :
+                                  pokemon.charAt(2) === ':' ? pokemon.slice(3).trim() : '';
+                    var displaySpecies = koSpecies(species);
+                    var displayNick = koSpecies(rawNick) || rawNick;
+                    if (rawNick === species) return [pokemon.slice(0, 2), '**' + displaySpecies + '**'];
+                    return [pokemon.slice(0, 2), displayNick + ' (**' + displaySpecies + '**)'];
+                };
+                proto.pokemonFull._koPatch = true;
+            }
+
+            // pokemonName 패치 (BattleScene override 없는 경우 대비)
+            if (!proto.pokemonName._koPatch) {
+                var _origPokemonName = proto.pokemonName;
+                proto.pokemonName = function(pokemonId) {
+                    var nick = _origPokemonName.call(this, pokemonId);
+                    if (!nick || nick.startsWith('???')) return nick;
+                    var translated = koSpecies(nick);
+                    return translated !== nick ?
+                        BattleTextParser.escapeReplace(translated) : nick;
+                };
+                proto.pokemonName._koPatch = true;
+            }
+        }
+
+        function patchBattleScene() {
+            if (typeof BattleScene === 'undefined' || BattleScene._koPatch) return;
+            var _Orig = BattleScene;
+            function _Wrapped(battle, $frame, $logFrame) {
+                _Orig.call(this, battle, $frame, $logFrame);
+                // BattleScene이 pokemonName을 인스턴스 오버라이드한 뒤 재패치
+                if (this.log && this.log.battleParser) {
+                    var _prev = this.log.battleParser.pokemonName;
+                    this.log.battleParser.pokemonName = function(pokemonId) {
+                        var nick = _prev.call(this, pokemonId);
+                        if (!nick || nick.startsWith('???')) return nick;
+                        var translated = koSpecies(nick);
+                        return translated !== nick ?
+                            BattleTextParser.escapeReplace(translated) : nick;
+                    };
+                }
+            }
+            _Wrapped.prototype = _Orig.prototype;
+            _Wrapped._koPatch = true;
+            // static 메서드 복사
+            for (var k in _Orig) { if (_Orig.hasOwnProperty(k)) _Wrapped[k] = _Orig[k]; }
+            BattleScene = _Wrapped;
+        }
+
+        function tryPatch() {
+            if (typeof BattleTextParser !== 'undefined') patchBattleTextParser();
+            if (typeof BattleScene !== 'undefined') patchBattleScene();
+        }
+
+        tryPatch();
+        window.addEventListener('load', tryPatch);
+        setTimeout(tryPatch, 300);
+        setTimeout(tryPatch, 1500);
+    })();
 })();
