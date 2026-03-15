@@ -475,9 +475,10 @@
 		console.log('[한글화] DexSearch 한국어 종족명 패치 완료');
 		return true;
 	});
+})();
 
-	// DexSearch.find 패치: 한국어 부분 문자열 검색 지원
-	// 예) '쳄' 입력 시 특성 Filter 버튼 + 쳄이 들어간 포켓몬/기술 목록
+// DexSearch.find 패치: 한국어 부분 문자열 검색 지원
+// 예) '쳄' 입력 시 특성 Filter 버튼 + 쳄이 들어간 포켓몬/기술 목록
 (function() {
 	patchWhenReady(function() {
 		if (typeof DexSearch === 'undefined') return false;
@@ -496,7 +497,7 @@
 		DexSearch.prototype.find = function(query) {
 			if (!query || !KO_RE.test(query)) return _origFind.call(this, query);
 			var q = query.trim();
-			if (this._koQuery === q && this.results) return false;
+			if (this._koQuery === q && this.results !== null && this.query === q) return false;
 			this._koQuery = q;
 			this.query = q;
 			this.exactMatch = false;
@@ -570,6 +571,33 @@
 	});
 })();
 
+// DexSearch.addFilter 패치: 한글 특성명을 _KoData로 ID로 변환
+(function() {
+	patchWhenReady(function() {
+		if (typeof DexSearch === 'undefined') return false;
+		if (DexSearch._koAddFilterPatch) return true;
+		var _origAddFilter = DexSearch.prototype.addFilter;
+		var KO_RE_AF = /[가-힣ㄱ-ㆎㅏ-ㅣ]/;
+		DexSearch.prototype.addFilter = function(entry) {
+			if (entry && entry[0] === 'ability' && typeof entry[1] === 'string' && KO_RE_AF.test(entry[1])) {
+				var kd = window._KoData;
+				if (kd && kd.abilities) {
+					for (var abId in kd.abilities) {
+						if (kd.abilities[abId] && kd.abilities[abId].name === entry[1]) {
+							entry = [entry[0], abId];
+							break;
+						}
+					}
+				}
+			}
+			return _origAddFilter.call(this, entry);
+		};
+		DexSearch._koAddFilterPatch = true;
+		console.log('[한글화] DexSearch.addFilter 한글 특성명 패치 완료');
+		return true;
+	});
+})();
+
 // 공통 헬퍼: 조건이 충족될 때까지 200ms 간격으로 patchFn 재시도
 function patchWhenReady(patchFn) {
 	if (!patchFn()) {
@@ -622,29 +650,36 @@ function patchWhenReady(patchFn) {
 // 이전에 생성된 Species 객체는 영어 이름을 유지하면서 한글 비교 실패
 (function() {
 	patchWhenReady(function() {
-		if (typeof Dex === 'undefined' || \!Dex.hasAbility) return false;
+		if (typeof Dex === 'undefined' || !Dex.hasAbility) return false;
 		if (Dex._koHasAbilityPatch) return true;
 		var _orig = Dex.hasAbility.bind(Dex);
 		Dex.hasAbility = function(species, ability) {
 			if (_orig(species, ability)) return true;
-			// 한글/영어 불일치 시 ID 기반 비교로 폴백
-			var kd = window._KoData;
-			if (\!kd || \!kd.abilities || \!ability || \!species || \!species.abilities) return false;
-			// ability가 한글이면 영어 ID를 찾고, 영어면 교소명 ID로 변환
+			if (!ability || !species || !species.abilities) return false;
+			// ability가 한글이면 BattleAliases로 영어 ID 조회, 영어면 ID 변환
 			var targetId = null;
 			var koRE = /[가-힣ㄱ-ㆎㅏ-ㅣ]/;
 			if (koRE.test(ability)) {
-				for (var abId in kd.abilities) {
-					if (kd.abilities[abId] && kd.abilities[abId].name === ability) { targetId = abId; break; }
+				var koId = ability.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+				if (window.BattleAliases && window.BattleAliases[koId]) {
+					targetId = window.BattleAliases[koId];
+				} else {
+					// BattleAliases 미등록 시 _KoData로 폴백
+					var kd = window._KoData;
+					if (kd && kd.abilities) {
+						for (var abId in kd.abilities) {
+							if (kd.abilities[abId] && kd.abilities[abId].name === ability) { targetId = abId; break; }
+						}
+					}
 				}
 			} else {
 				targetId = ability.toLowerCase().replace(/[^a-z0-9]+/g, '');
 			}
-			if (\!targetId) return false;
+			if (!targetId) return false;
 			for (var slot in species.abilities) {
 				if (slot.charAt(0) === '_') continue;
 				var enName = species.abilities['_en_' + slot] || species.abilities[slot];
-				if (\!enName || typeof enName \!== 'string') continue;
+				if (!enName || typeof enName !== 'string') continue;
 				var enId = enName.toLowerCase().replace(/[^a-z0-9]+/g, '');
 				if (enId === targetId) return true;
 			}

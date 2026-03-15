@@ -497,7 +497,7 @@
 		DexSearch.prototype.find = function(query) {
 			if (!query || !KO_RE.test(query)) return _origFind.call(this, query);
 			var q = query.trim();
-			if (this._koQuery === q && this.results) return false;
+			if (this._koQuery === q && this.results !== null && this.query === q) return false;
 			this._koQuery = q;
 			this.query = q;
 			this.exactMatch = false;
@@ -567,6 +567,33 @@
 		};
 		DexSearch._koFindPatch = true;
 		console.log('[한글화] DexSearch 한국어 부분 검색 패치 완료');
+		return true;
+	});
+})();
+
+// DexSearch.addFilter 패치: 한글 특성명을 _KoData로 ID로 변환
+(function() {
+	patchWhenReady(function() {
+		if (typeof DexSearch === 'undefined') return false;
+		if (DexSearch._koAddFilterPatch) return true;
+		var _origAddFilter = DexSearch.prototype.addFilter;
+		var KO_RE_AF = /[가-힣ㄱ-ㆎㅏ-ㅣ]/;
+		DexSearch.prototype.addFilter = function(entry) {
+			if (entry && entry[0] === 'ability' && typeof entry[1] === 'string' && KO_RE_AF.test(entry[1])) {
+				var kd = window._KoData;
+				if (kd && kd.abilities) {
+					for (var abId in kd.abilities) {
+						if (kd.abilities[abId] && kd.abilities[abId].name === entry[1]) {
+							entry = [entry[0], abId];
+							break;
+						}
+					}
+				}
+			}
+			return _origAddFilter.call(this, entry);
+		};
+		DexSearch._koAddFilterPatch = true;
+		console.log('[한글화] DexSearch.addFilter 한글 특성명 패치 완료');
 		return true;
 	});
 })();
