@@ -475,9 +475,10 @@
 		console.log('[한글화] DexSearch 한국어 종족명 패치 완료');
 		return true;
 	});
+})();
 
-	// DexSearch.find 패치: 한국어 부분 문자열 검색 지원
-	// 예) '쳄' 입력 시 특성 Filter 버튼 + 쳄이 들어간 포켓몬/기술 목록
+// DexSearch.find 패치: 한국어 부분 문자열 검색 지원
+// 예) '쳄' 입력 시 특성 Filter 버튼 + 쳄이 들어간 포켓몬/기술 목록
 (function() {
 	patchWhenReady(function() {
 		if (typeof DexSearch === 'undefined') return false;
