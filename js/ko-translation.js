@@ -534,36 +534,17 @@
 				}
 			}
 
-			if (!searchType || searchType === 'pokemon') {
-				searchTable(kd.pokemon, 'pokemon', 'Pokémon');
-				addTypeFilter('pokemon');
-				// 포켓모 탭에서 특성 검색: BattlePokedex 직접 순회
-				// instafilter는 한글화된 abilities와 비교 실패 → _en_* 백업 이용
-				if (kd.abilities && window.BattlePokedex) {
+			if (\!searchType || searchType === 'pokemon') {
+				// 특성 한글명 검색 시 영어 ID로 네이티브 검색 위임 (Filter 버튼 UI 포함)
+				if (kd.abilities) {
 					for (var abId in kd.abilities) {
 						var abName = kd.abilities[abId] && kd.abilities[abId].name;
-						if (!abName || !abName.includes(q)) continue;
-						var pokeRows = [];
-						for (var pokeId in window.BattlePokedex) {
-							var pokeEntry = window.BattlePokedex[pokeId];
-							if (!pokeEntry || !pokeEntry.abilities) continue;
-							var matched = false;
-							for (var slot in pokeEntry.abilities) {
-								if (slot.charAt(0) === '_') continue;
-								var enName = pokeEntry.abilities['_en_' + slot] || pokeEntry.abilities[slot];
-								if (!enName || typeof enName !== 'string') continue;
-								var enId = enName.toLowerCase().replace(/[^a-z0-9]+/g, '');
-								if (enId === abId) { matched = true; break; }
-							}
-							if (matched) pokeRows.push(['pokemon', pokeId, 0, 0]);
-						}
-						if (pokeRows.length) {
-							results.push(['header', abName + ' 특성 포켓모']);
-							results = results.concat(pokeRows);
-						}
-						break;
+						if (\!abName || \!abName.includes(q)) continue;
+						return _origFind.call(this, abId);
 					}
 				}
+				searchTable(kd.pokemon, 'pokemon', 'Pokémon');
+				addTypeFilter('pokemon');
 			}
 			if (!searchType || searchType === 'move') {
 				searchTable(kd.moves, 'move', '기술');
