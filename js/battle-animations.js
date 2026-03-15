@@ -108,12 +108,15 @@ this.log.battleParser.pokemonName=function(pokemonId){
 if(!pokemonId)return'';
 if(battle.ignoreNicks||battle.ignoreOpponent){
 var pokemon=battle.getPokemon(pokemonId);
-if(pokemon)return pokemon.speciesForme;
+if(pokemon){var _sf=pokemon.speciesForme;try{if(window.BattlePokedex){var _sfId=toID(_sf);var _sfSp=window.BattlePokedex[_sfId];if(_sfSp&&_sfSp.name)_sf=_sfSp.name;}}catch(e){}return _sf;}
 }
 if(!pokemonId.startsWith('p'))return'???pokemon:'+pokemonId+'???';
-if(pokemonId.charAt(3)===':')return BattleTextParser.escapeReplace(pokemonId.slice(4).trim());else
-if(pokemonId.charAt(2)===':')return BattleTextParser.escapeReplace(pokemonId.slice(3).trim());
-return'???pokemon:'+pokemonId+'???';
+var _nick='';
+if(pokemonId.charAt(3)===':')_nick=pokemonId.slice(4).trim();
+else if(pokemonId.charAt(2)===':')_nick=pokemonId.slice(3).trim();
+else return'???pokemon:'+pokemonId+'???';
+try{if(_nick&&window.BattlePokedex){var _nkId=toID(_nick);var _nk=window.BattlePokedex[_nkId];if(_nk&&_nk.name)_nick=_nk.name;}}catch(e){}
+return BattleTextParser.escapeReplace(_nick);
 };
 
 var numericId=0;
