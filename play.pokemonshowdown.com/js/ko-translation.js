@@ -622,29 +622,36 @@ function patchWhenReady(patchFn) {
 // 이전에 생성된 Species 객체는 영어 이름을 유지하면서 한글 비교 실패
 (function() {
 	patchWhenReady(function() {
-		if (typeof Dex === 'undefined' || \!Dex.hasAbility) return false;
+		if (typeof Dex === 'undefined' || !Dex.hasAbility) return false;
 		if (Dex._koHasAbilityPatch) return true;
 		var _orig = Dex.hasAbility.bind(Dex);
 		Dex.hasAbility = function(species, ability) {
 			if (_orig(species, ability)) return true;
-			// 한글/영어 불일치 시 ID 기반 비교로 폴백
-			var kd = window._KoData;
-			if (\!kd || \!kd.abilities || \!ability || \!species || \!species.abilities) return false;
-			// ability가 한글이면 영어 ID를 찾고, 영어면 교소명 ID로 변환
+			if (!ability || !species || !species.abilities) return false;
+			// ability가 한글이면 BattleAliases로 영어 ID 조회, 영어면 ID 변환
 			var targetId = null;
 			var koRE = /[가-힣ㄱ-ㆎㅏ-ㅣ]/;
 			if (koRE.test(ability)) {
-				for (var abId in kd.abilities) {
-					if (kd.abilities[abId] && kd.abilities[abId].name === ability) { targetId = abId; break; }
+				var koId = ability.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+				if (window.BattleAliases && window.BattleAliases[koId]) {
+					targetId = window.BattleAliases[koId];
+				} else {
+					// BattleAliases 미등록 시 _KoData로 폴백
+					var kd = window._KoData;
+					if (kd && kd.abilities) {
+						for (var abId in kd.abilities) {
+							if (kd.abilities[abId] && kd.abilities[abId].name === ability) { targetId = abId; break; }
+						}
+					}
 				}
 			} else {
 				targetId = ability.toLowerCase().replace(/[^a-z0-9]+/g, '');
 			}
-			if (\!targetId) return false;
+			if (!targetId) return false;
 			for (var slot in species.abilities) {
 				if (slot.charAt(0) === '_') continue;
 				var enName = species.abilities['_en_' + slot] || species.abilities[slot];
-				if (\!enName || typeof enName \!== 'string') continue;
+				if (!enName || typeof enName !== 'string') continue;
 				var enId = enName.toLowerCase().replace(/[^a-z0-9]+/g, '');
 				if (enId === targetId) return true;
 			}
