@@ -571,7 +571,7 @@
 	});
 })();
 
-// DexSearch.addFilter 패치: 한글 특성명을 _KoData로 ID로 변환
+// DexSearch.addFilter 패치: 한글 특성명/기술명을 _KoData로 ID로 변환
 (function() {
 	patchWhenReady(function() {
 		if (typeof DexSearch === 'undefined') return false;
@@ -579,12 +579,15 @@
 		var _origAddFilter = DexSearch.prototype.addFilter;
 		var KO_RE_AF = /[가-힣ㄱ-ㆎㅏ-ㅣ]/;
 		DexSearch.prototype.addFilter = function(entry) {
-			if (entry && entry[0] === 'ability' && typeof entry[1] === 'string' && KO_RE_AF.test(entry[1])) {
+			if (entry && typeof entry[1] === 'string' && KO_RE_AF.test(entry[1])) {
 				var kd = window._KoData;
-				if (kd && kd.abilities) {
-					for (var abId in kd.abilities) {
-						if (kd.abilities[abId] && kd.abilities[abId].name === entry[1]) {
-							entry = [entry[0], abId];
+				var type = entry[0];
+				var table = type === 'ability' ? (kd && kd.abilities) :
+				            type === 'move'    ? (kd && kd.moves) : null;
+				if (table) {
+					for (var id in table) {
+						if (table[id] && table[id].name === entry[1]) {
+							entry = [type, id];
 							break;
 						}
 					}
@@ -593,7 +596,7 @@
 			return _origAddFilter.call(this, entry);
 		};
 		DexSearch._koAddFilterPatch = true;
-		console.log('[한글화] DexSearch.addFilter 한글 특성명 패치 완료');
+		console.log('[한글화] DexSearch.addFilter 한글 특성/기술명 패치 완료');
 		return true;
 	});
 })();
