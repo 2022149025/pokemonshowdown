@@ -13914,7 +13914,7 @@
                 proto.effect._koPatch = true;
             }
 
-            // parseArgs 패치: case 'move'의 기술명(args[2]) 한국어 변환
+            // parseArgs 패치: case 'move'의 기술명(args[2]) 한국어 변환 + 결과 문자열 포켓몬명 후처리
             if (!proto.parseArgs._koPatch) {
                 var _origParseArgs = proto.parseArgs;
                 proto.parseArgs = function(args, kwArgs) {
@@ -13925,7 +13925,17 @@
                             if (mv && mv.name) { args = args.slice(0); args[2] = mv.name; }
                         } catch(e) {}
                     }
-                    return _origParseArgs.call(this, args, kwArgs);
+                    var result = _origParseArgs.call(this, args, kwArgs);
+                    // 결과에서 영어 포켓몬명 → 한국어 후처리 (proto.pokemon 패치가 작동 못할 경우 대비)
+                    if (result) {
+                        try {
+                            result = result.replace(/[A-Z][a-zA-Z0-9]*(?:-[A-Z0-9][a-zA-Z0-9]*)*/g, function(m) {
+                                var kid = _toID(m);
+                                return (kid && koPokedex[kid] && koPokedex[kid].name) ? koPokedex[kid].name : m;
+                            });
+                        } catch(e) {}
+                    }
+                    return result;
                 };
                 proto.parseArgs._koPatch = true;
             }
