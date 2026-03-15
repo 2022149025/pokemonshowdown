@@ -268,9 +268,12 @@ function BattleTextParser(){var perspective=arguments.length>0&&arguments[0]!==u
 pokemonName=function(pokemon){
 if(!pokemon)return'';
 if(!pokemon.startsWith('p'))return"???pokemon:"+pokemon+"???";
-if(pokemon.charAt(3)===':')return BattleTextParser.escapeReplace(pokemon.slice(4).trim());else
-if(pokemon.charAt(2)===':')return BattleTextParser.escapeReplace(pokemon.slice(3).trim());
-return"???pokemon:"+pokemon+"???";
+var _nick='';
+if(pokemon.charAt(3)===':')_nick=pokemon.slice(4).trim();
+else if(pokemon.charAt(2)===':')_nick=pokemon.slice(3).trim();
+else return"???pokemon:"+pokemon+"???";
+try{if(_nick&&window.BattlePokedex){var _nkId=toID(_nick);var _nk=window.BattlePokedex[_nkId];if(_nk&&_nk.name)_nick=_nk.name;}}catch(e){}
+return BattleTextParser.escapeReplace(_nick);
 };this.perspective=perspective;}BattleTextParser.parseLine=function parseLine(line,noDefault){if(!line.startsWith('|')){return['',line];}if(line==='|'){return['done'];}var index=line.indexOf('|',1);var cmd=line.slice(1,index);switch(cmd){case'chatmsg':case'chatmsg-raw':case'raw':case'error':case'html':case'inactive':case'inactiveoff':case'warning':case'fieldhtml':case'controlshtml':case'pagehtml':case'bigerror':case'debug':case'tier':case'challstr':case'popup':case'':return[cmd,line.slice(index+1)];case'c':case'chat':case'uhtml':case'uhtmlchange':case'queryresponse':case'showteam':var index2a=line.indexOf('|',index+1);return[cmd,line.slice(index+1,index2a),line.slice(index2a+1)];case'c:':case'pm':var index2b=line.indexOf('|',index+1);var index3b=line.indexOf('|',index2b+1);return[cmd,line.slice(index+1,index2b),line.slice(index2b+1,index3b),line.slice(index3b+1)];}if(noDefault)return null;return line.slice(1).split('|');};BattleTextParser.parseBattleLine=function parseBattleLine(line){var args=this.parseLine(line,true);if(args)return{args:args,kwArgs:{}};args=line.slice(1).split('|');var kwArgs={};while(args.length>1){var lastArg=args[args.length-1];if(!lastArg.startsWith('['))break;var bracketPos=lastArg.indexOf(']');if(bracketPos<=0)break;kwArgs[lastArg.slice(1,bracketPos)]=lastArg.slice(bracketPos+1).trim()||'.';args.pop();}return BattleTextParser.upgradeArgs({args:args,kwArgs:kwArgs});};BattleTextParser.parseNameParts=function parseNameParts(text){var group='';if(!/[A-Za-z0-9]/.test(text.charAt(0))){group=text.charAt(0);text=text.slice(1);}var name=text;var atIndex=text.indexOf('@');var status='';var away=false;if(atIndex>0){name=text.slice(0,atIndex);status=text.slice(atIndex+1);if(status.startsWith('!')){away=true;status=status.slice(1);}}return{group:group,name:name,away:away,status:status};};BattleTextParser.upgradeArgs=function upgradeArgs(_ref){var args=_ref.args,kwArgs=_ref.kwArgs;switch(args[0]){case'-activate':{if(kwArgs.item||kwArgs.move||kwArgs.number||kwArgs.ability)return{args:args,kwArgs:kwArgs};var _args=args,pokemon=_args[1],effect=_args[2],arg3=_args[3],arg4=_args[4];var target=kwArgs.of;var id=BattleTextParser.effectId(effect);if(kwArgs.block)return{args:['-fail',pokemon],kwArgs:kwArgs};if(id==='wonderguard')return{args:['-immune',pokemon],kwArgs:{from:'ability:Wonder Guard'}};if(id==='beatup'&&kwArgs.of)return{args:args,kwArgs:{name:kwArgs.of}};if(['ingrain','quickguard','wideguard','craftyshield','matblock','protect','mist','safeguard','electricterrain','mistyterrain','psychicterrain','telepathy','stickyhold','suctioncups','aromaveil','flowerveil','sweetveil','disguise','safetygoggles','protectivepads'].includes(id)){if(target){kwArgs.of=pokemon;return{args:['-block',target,effect,arg3],kwArgs:kwArgs};}return{args:['-block',pokemon,effect,arg3],kwArgs:kwArgs};}if(id==='charge'){return{args:['-singlemove',pokemon,effect],kwArgs:{of:target}};}if(['bind','wrap','clamp','whirlpool','firespin','magmastorm','sandtomb','infestation','snaptrap','thundercage','trapped'].includes(id)){return{args:['-start',pokemon,effect],kwArgs:{of:target}};}if(id==='fairylock'){return{args:['-fieldactivate',effect],kwArgs:{}};}if(id==='symbiosis'||id==='poltergeist'){kwArgs.item=arg3;}else if(id==='magnitude'){kwArgs.number=arg3;}else if(id==='skillswap'||id==='mummy'||id==='lingeringaroma'||id==='wanderingspirit'){kwArgs.ability=arg3;kwArgs.ability2=arg4;}else if(['eeriespell','gmaxdepletion','spite','grudge','forewarn','sketch','leppaberry','mysteryberry'].includes(id)){kwArgs.move=arg3;kwArgs.number=arg4;}args=['-activate',pokemon,effect,target||''];break;}case'-fail':{if(kwArgs.from==='ability: Flower Veil'){return{args:['-block',kwArgs.of,'ability: Flower Veil'],kwArgs:{of:args[1]}};}break;}case'-start':{if(kwArgs.from==='Protean'||kwArgs.from==='Color Change')kwArgs.from='ability:'+kwArgs.from;break;}case'move':{if(kwArgs.from==='Magic Bounce')kwArgs.from='ability:Magic Bounce';break;}case'cant':{var _args2=args,_pokemon2=_args2[1],_effect2=_args2[2],move=_args2[3];if(['ability: Damp','ability: Dazzling','ability: Queenly Majesty','ability: Armor Tail'].includes(_effect2)){args[0]='-block';return{args:['-block',_pokemon2,_effect2,move,kwArgs.of],kwArgs:{}};}break;}case'-heal':{var _id=BattleTextParser.effectId(kwArgs.from);if(['dryskin','eartheater','voltabsorb','waterabsorb'].includes(_id))kwArgs.of='';break;}case'-restoreboost':{args[0]='-clearnegativeboost';break;}case'-weather':{if(args[1]==='Snow')args[1]='Snowscape';break;}case'-ability':{if(args[3]&&(args[3].startsWith('p1')||args[3].startsWith('p2')||args[3]==='boost')){args[4]=args[3];args[3]='';}break;}case'-nothing':return{args:['-activate','','move:Splash'],kwArgs:kwArgs};}return{args:args,kwArgs:kwArgs};};var _proto=BattleTextParser.prototype;_proto.extractMessage=function extractMessage(buf){var out='';for(var _i2=0,_buf$split2=buf.split('\n');_i2<_buf$split2.length;_i2++){var _line=_buf$split2[_i2];var _BattleTextParser$par=BattleTextParser.parseBattleLine(_line),args=_BattleTextParser$par.args,kwArgs=_BattleTextParser$par.kwArgs;out+=this.parseArgs(args,kwArgs)||'';}return out;};_proto.fixLowercase=function fixLowercase(input){if(this.lowercaseRegExp===undefined){var prefixes=['pokemon','opposingPokemon','team','opposingTeam','party','opposingParty'].map(function(templateId){var template=BattleText["default"][templateId];if(template.startsWith(template.charAt(0).toUpperCase()))return'';var bracketIndex=template.indexOf('[');if(bracketIndex>=0)return template.slice(0,bracketIndex);return template;}).filter(function(prefix){return prefix;});if(prefixes.length){var buf="((?:^|\n)(?:  |  \\(|\\[)?)("+prefixes.map(BattleTextParser.escapeRegExp).join('|')+")";this.lowercaseRegExp=new RegExp(buf,'g');}else{this.lowercaseRegExp=null;}}if(!this.lowercaseRegExp)return input;return input.replace(this.lowercaseRegExp,function(match,p1,p2){return p1+p2.charAt(0).toUpperCase()+p2.slice(1);});};BattleTextParser.escapeRegExp=function escapeRegExp(input){return input.replace(/[\\^$.*+?()[\]{}|]/g,'\\$&');};BattleTextParser.escapeReplace=function escapeReplace(input){return input.replace(/\$/g,'$$$$');};_proto.
 
 
@@ -286,11 +289,15 @@ return template.replace('[NICKNAME]',name).replace(/\$/g,'$$$$');
 
 
 pokemonFull=function pokemonFull(pokemon,details){
-var nickname=this.pokemonName(pokemon);
-
 var species=details.split(',')[0];
-if(nickname===species)return[pokemon.slice(0,2),"**"+species+"**"];
-return[pokemon.slice(0,2),nickname+" (**"+species+"**)"];
+var rawNick='';
+if(pokemon.charAt(3)===':')rawNick=pokemon.slice(4).trim();
+else if(pokemon.charAt(2)===':')rawNick=pokemon.slice(3).trim();
+var nickname=this.pokemonName(pokemon);
+var displaySpecies=species;
+try{if(window.BattlePokedex){var _spId=toID(species);var _sp=window.BattlePokedex[_spId];if(_sp&&_sp.name)displaySpecies=_sp.name;}}catch(e){}
+if(rawNick===species)return[pokemon.slice(0,2),"**"+displaySpecies+"**"];
+return[pokemon.slice(0,2),nickname+" (**"+displaySpecies+"**)"];
 };_proto.
 
 trainer=function trainer(side){
@@ -346,12 +353,22 @@ return toID(effect);
 
 effect=function effect(_effect){
 if(!_effect)return'';
-if(_effect.startsWith('item:')||_effect.startsWith('move:')){
-_effect=_effect.slice(5);
-}else if(_effect.startsWith('ability:')){
-_effect=_effect.slice(8);
+var _prefix='';
+if(_effect.startsWith('item:')){_prefix='item';_effect=_effect.slice(5);}
+else if(_effect.startsWith('move:')){_prefix='move';_effect=_effect.slice(5);}
+else if(_effect.startsWith('ability:')){_prefix='ability';_effect=_effect.slice(8);}
+_effect=_effect.trim();
+try{
+if(_prefix==='move'&&window.BattleMovedex){var _mvId=toID(_effect);var _mv=window.BattleMovedex[_mvId];if(_mv&&_mv.name)return _mv.name;}
+if(_prefix==='ability'&&window.BattleAbilities){var _abId=toID(_effect);var _ab=window.BattleAbilities[_abId];if(_ab&&_ab.name)return _ab.name;}
+if(_prefix==='item'&&window.BattleItems){var _itId=toID(_effect);var _it=window.BattleItems[_itId];if(_it&&_it.name)return _it.name;}
+if(!_prefix){
+if(window.BattleMovedex){var _mvId2=toID(_effect);var _mv2=window.BattleMovedex[_mvId2];if(_mv2&&_mv2.name)return _mv2.name;}
+if(window.BattleAbilities){var _abId2=toID(_effect);var _ab2=window.BattleAbilities[_abId2];if(_ab2&&_ab2.name)return _ab2.name;}
+if(window.BattleItems){var _itId2=toID(_effect);var _it2=window.BattleItems[_itId2];if(_it2&&_it2.name)return _it2.name;}
 }
-return _effect.trim();
+}catch(e){}
+return _effect;
 };_proto.
 
 template=function template(type){for(var _len=arguments.length,namespaces=new Array(_len>1?_len-1:0),_key=1;_key<_len;_key++){namespaces[_key-1]=arguments[_key];}for(var _i4=0;_i4<
@@ -556,7 +573,9 @@ id='transform';
 }
 var _template3=this.template(templateName,id,kwArgs.msg?'':'NODEFAULT');
 var line1=this.maybeAbility(kwArgs.from,kwArgs.of||_pokemon4);
-return line1+_template3.replace('[POKEMON]',this.pokemon(_pokemon4)).replace('[SPECIES]',newSpecies);
+var displayNewSpecies=newSpecies;
+try{if(newSpecies&&window.BattlePokedex){var _nsId=toID(newSpecies);var _ns=window.BattlePokedex[_nsId];if(_ns&&_ns.name)displayNewSpecies=_ns.name;}}catch(e){}
+return line1+_template3.replace('[POKEMON]',this.pokemon(_pokemon4)).replace('[SPECIES]',displayNewSpecies);
 }
 
 case'switchout':{
@@ -584,6 +603,7 @@ return _template7.replace('[POKEMON]',this.pokemon(_pokemon7)).replace('[TARGET]
 
 case'move':{
 var _pokemon8=args[1],move=args[2];
+try{if(window.BattleMovedex){var _mvId3=toID(move);var _mv3=window.BattleMovedex[_mvId3];if(_mv3&&_mv3.name)move=_mv3.name;}}catch(e){}
 var _line2=this.maybeAbility(kwArgs.from,kwArgs.of||_pokemon8);
 if(kwArgs.zeffect){
 _line2=this.template('zEffect').replace('[POKEMON]',this.pokemon(_pokemon8));
@@ -594,6 +614,7 @@ return _line2+_template8.replace('[POKEMON]',this.pokemon(_pokemon8)).replace('[
 
 case'cant':{
 var _pokemon9=args[1],effect=args[2],_move=args[3];
+if(_move){try{if(window.BattleMovedex){var _mvId4=toID(_move);var _mv4=window.BattleMovedex[_mvId4];if(_mv4&&_mv4.name)_move=_mv4.name;}}catch(e){}}
 var _template9=this.template('cant',effect,'NODEFAULT')||
 this.template(_move?'cant':'cantNoMove');
 var _line3=this.maybeAbility(effect,kwArgs.of||_pokemon9);
