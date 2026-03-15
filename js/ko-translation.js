@@ -477,11 +477,20 @@
 	});
 
 	// DexSearch.find 패치: 한국어 부분 문자열 검색 지원
-	// '디'만 쳐도 '디알가', '디안시' 등 한국어 이름에 '디'가 포함된 포켓몬/기술/특성/아이템 표시
+	// '디'→디알가/디안시, '불꽃'→불꽃승이/불꽃타입포켓몬/불꽃펀치 등
 	patchWhenReady(function() {
 		if (typeof DexSearch === 'undefined') return false;
 		if (DexSearch._koFindPatch) return true;
 		var KO_RE = /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/;
+
+		// 한국어 타입명 → 영어 ID
+		var KO_TYPES = {
+			'노말':'normal','불꽃':'fire','물':'water','풀':'grass','전기':'electric',
+			'얼음':'ice','격투':'fighting','독':'poison','땅':'ground','비행':'flying',
+			'에스퍼':'psychic','벌레':'bug','바위':'rock','고스트':'ghost','드래곤':'dragon',
+			'악':'dark','강철':'steel','페어리':'fairy'
+		};
+
 		var _origFind = DexSearch.prototype.find;
 		DexSearch.prototype.find = function(query) {
 			if (!query || !KO_RE.test(query)) return _origFind.call(this, query);
@@ -493,6 +502,7 @@
 			var searchType = this.typedSearch ? this.typedSearch.searchType : '';
 			var kd = window._KoData || {};
 			var results = [];
+			var self = this;
 
 			function searchTable(table, type, header) {
 				if (!table) return;
@@ -508,8 +518,45 @@
 				}
 			}
 
-			if (!searchType || searchType === 'pokemon') searchTable(kd.pokemon, 'pokemon', 'Pokémon');
-			if (!searchType || searchType === 'move')    searchTable(kd.moves, 'move', '기술');
+			// 타입 인스타필터: 쿼리가 한국어 타입명에 포함될 경우 해당 타입 포켓몬/기술 목록 추가
+			function addTypeFilter(st) {
+				for (var koType in KO_TYPES) {
+					if (!koType.includes(q)) continue;
+					var engType = KO_TYPES[koType];
+					try {
+						var typeRows = self.instafilter(st, 'type', engType);
+						if (typeRows && typeRows.length) {
+							// 헤더를 한국어 타입명으로 교체
+							typeRows[0] = ['header', koType + ' 타입 ' + (st === 'move' ? '기술' : '포켓몬')];
+							results = results.concat(typeRows);
+						}
+					} catch(e) {}
+				}
+			}
+
+			if (!searchType || searchType === 'pokemon') {
+				searchTable(kd.pokemon, 'pokemon', 'Pokémon');
+				addTypeFilter('pokemon');
+				// 포켓몬 탭에서 특성 인스타필터
+				if (kd.abilities) {
+					for (var abId in kd.abilities) {
+						var abName = kd.abilities[abId] && kd.abilities[abId].name;
+						if (!abName || !abName.includes(q)) continue;
+						try {
+							var abRows = self.instafilter('pokemon', 'ability', abId);
+							if (abRows && abRows.length) {
+								abRows[0] = ['header', abName + ' 특성 포켓몬'];
+								results = results.concat(abRows);
+							}
+						} catch(e) {}
+						break; // 첫 번째 매칭 특성만 (너무 많아지지 않도록)
+					}
+				}
+			}
+			if (!searchType || searchType === 'move') {
+				searchTable(kd.moves, 'move', '기술');
+				addTypeFilter('move');
+			}
 			if (!searchType || searchType === 'ability') searchTable(kd.abilities, 'ability', '특성');
 			if (!searchType || searchType === 'item')    searchTable(kd.items, 'item', '아이템');
 
