@@ -2,7 +2,7 @@
 /* Korean Pokemon Showdown Custom Styles */
 
 /* 기본 폰트 설정 - Noto Sans KR */
-*, body {
+body {
 	font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif !important;
 }
 

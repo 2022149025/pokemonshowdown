@@ -11,7 +11,7 @@
 // Noto Sans KR 폰트 강제 적용 (CSS 캐시 우회)
 (function() {
 	var s = document.createElement('style');
-	s.textContent = "*,body{font-family:'Noto Sans KR','Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif!important}";
+	s.textContent = "body{font-family:'Noto Sans KR','Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif!important}";
 	document.head.appendChild(s);
 })();
 
