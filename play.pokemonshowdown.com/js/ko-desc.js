@@ -13958,7 +13958,7 @@
             }
 
             // pokemonName 패치 (BattleScene override 없는 경우 대비)
-            if (!proto.pokemonName._koPatch) {
+            if (proto.pokemonName && !proto.pokemonName._koPatch) {
                 var _origPokemonName = proto.pokemonName;
                 proto.pokemonName = function(pokemonId) {
                     var nick = _origPokemonName.call(this, pokemonId);
