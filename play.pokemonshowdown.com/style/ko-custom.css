@@ -1,0 +1,31 @@
+/* 포켓몬 쇼다운 한글화 커스텀 스타일 */
+/* Korean Pokemon Showdown Custom Styles */
+
+/* 기본 폰트 설정 - Noto Sans KR */
+*, body {
+	font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif !important;
+}
+
+/* 뉴스 임베드 영역 */
+.pm-window.news-embed {
+	max-width: 100%;
+}
+
+.pm-window.news-embed .pm-log {
+	overflow-y: auto;
+}
+
+/* 로고 영역 */
+.logo {
+	vertical-align: middle;
+}
+
+/* 한글 텍스트 가독성 향상 */
+.battle-log, .chat-log {
+	word-break: keep-all;
+}
+
+/* 팀 빌더 한글 지원 */
+.teambuilder-set {
+	word-break: keep-all;
+}
