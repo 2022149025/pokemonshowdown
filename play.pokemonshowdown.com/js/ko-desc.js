@@ -4182,13 +4182,13 @@
         "name": "차데스"
     },
     "poltchageistartisan": {
-        "name": "차데스(장인의 폼)"
+        "name": "차데스(알짜배기의 모습)"
     },
     "sinistcha": {
         "name": "그우린차"
     },
     "sinistchamasterpiece": {
-        "name": "차데스(명품)"
+        "name": "그우린차(걸작의 모습)"
     },
     "okidogi": {
         "name": "조타구"
