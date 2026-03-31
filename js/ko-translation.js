@@ -733,20 +733,38 @@ function patchWhenReady(patchFn) {
 	});
 })();
 
-// Storage.packTeam 패치: 한글 아이템/특성/기술명 → 영어 ID 변환 후 저장
+// Storage.packTeam 패치: 한글 종족명/아이템/특성/기술명 → 영어 ID 변환 후 저장
 // 문제: unpackTeam이 Dex에서 한글명으로 복원 → packTeam에서 toID(한글)='' → 빈값으로 저장됨
+// BattleAliases 대신 _KoData로 직접 조회 (BattleAliases 덮어쓰기 문제 우회)
 (function() {
+	var KO_RE_PK = /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/;
+	function resolveKo(name, table) {
+		if (!name || typeof name !== 'string' || !KO_RE_PK.test(name)) return name;
+		if (table) {
+			for (var id in table) {
+				if (table[id] && table[id].name === name) return id;
+			}
+		}
+		if (window.BattleAliases) {
+			var koId = name.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+			if (window.BattleAliases[koId]) return window.BattleAliases[koId];
+		}
+		return name;
+	}
+
 	patchWhenReady(function() {
 		if (typeof Storage === 'undefined' || !Storage.packTeam) return false;
 		if (Storage._koPackPatch) return true;
 		var _orig = Storage.packTeam;
 		Storage.packTeam = function(team) {
-			if (!team || !window.resolveKoreanName) return _orig.call(this, team);
+			if (!team) return _orig.call(this, team);
+			var kd = window._KoData || {};
 			var patched = team.map(function(set) {
 				var s = Object.assign({}, set);
-				if (s.item) s.item = window.resolveKoreanName(s.item);
-				if (s.ability) s.ability = window.resolveKoreanName(s.ability);
-				if (s.moves) s.moves = s.moves.map(function(m) { return m ? window.resolveKoreanName(m) : m; });
+				if (s.species) s.species = resolveKo(s.species, kd.pokemon);
+				if (s.item) s.item = resolveKo(s.item, kd.items);
+				if (s.ability) s.ability = resolveKo(s.ability, kd.abilities);
+				if (s.moves) s.moves = s.moves.map(function(m) { return m ? resolveKo(m, kd.moves) : m; });
 				return s;
 			});
 			return _orig.call(this, patched);
