@@ -13920,7 +13920,7 @@
             // parseArgs 패치: case 'move'의 기술명(args[2]) 한국어 변환 + 결과 문자열 포켓몬명 후처리
             if (!proto.parseArgs._koPatch) {
                 var _origParseArgs = proto.parseArgs;
-                proto.parseArgs = function(args, kwArgs) {
+                proto.parseArgs = function(args, kwArgs, noSectionBreak) {
                     if (args[0] === 'move' && args[2] && window.BattleMovedex) {
                         try {
                             var id = _toID(args[2]);
@@ -13928,7 +13928,7 @@
                             if (mv && mv.name) { args = args.slice(0); args[2] = mv.name; }
                         } catch(e) {}
                     }
-                    var result = _origParseArgs.call(this, args, kwArgs);
+                    var result = _origParseArgs.call(this, args, kwArgs, noSectionBreak);
                     // 결과에서 영어 포켓몬명 → 한국어 후처리 (proto.pokemon 패치가 작동 못할 경우 대비)
                     if (result) {
                         try {
@@ -14030,5 +14030,137 @@
         window.addEventListener('load', tryPatch);
         setTimeout(tryPatch, 300);
         setTimeout(tryPatch, 1500);
+    })();
+
+    // ============================================================
+    // Teams.pack / packName 한국어 대응 패치
+    // packName이 한글 문자를 제거하여 빈 문자열이 되는 문제를 해결
+    // 한글 이름 → 영어 이름 변환 후 원본 packName 호출
+    // ============================================================
+    (function() {
+        function resolveKoToEnglish(name) {
+            if (!name || typeof name !== 'string') return name;
+            if (!/[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(name)) return name;
+
+            var koId = name.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+
+            // BattleAliases에서 영어 ID 조회
+            if (window.BattleAliases && window.BattleAliases[koId]) {
+                var engId = window.BattleAliases[koId];
+                // 영어 ID로 원래 이름 복원 (BattlePokedex, BattleMovedex 등에서)
+                if (window.BattlePokedex && window.BattlePokedex[engId] && window.BattlePokedex[engId].englishName) {
+                    return window.BattlePokedex[engId].englishName;
+                }
+                if (window.BattleMovedex && window.BattleMovedex[engId] && window.BattleMovedex[engId].englishName) {
+                    return window.BattleMovedex[engId].englishName;
+                }
+                if (window.BattleItems && window.BattleItems[engId] && window.BattleItems[engId].englishName) {
+                    return window.BattleItems[engId].englishName;
+                }
+                if (window.BattleAbilities && window.BattleAbilities[engId] && window.BattleAbilities[engId].englishName) {
+                    return window.BattleAbilities[engId].englishName;
+                }
+                // 영어 이름을 찾지 못하면 ID 자체를 반환 (packName이 처리 가능한 英数字)
+                return engId;
+            }
+
+            // _KoData에서 영어 ID 역조회
+            if (window._KoData) {
+                var tables = ['pokemon', 'moves', 'items', 'abilities'];
+                var battleTables = [window.BattlePokedex, window.BattleMovedex, window.BattleItems, window.BattleAbilities];
+                for (var t = 0; t < tables.length; t++) {
+                    var koTable = window._KoData[tables[t]];
+                    if (!koTable) continue;
+                    for (var id in koTable) {
+                        if (koTable[id] && koTable[id].name) {
+                            var nameId = koTable[id].name.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+                            if (nameId === koId) {
+                                if (battleTables[t] && battleTables[t][id] && battleTables[t][id].englishName) {
+                                    return battleTables[t][id].englishName;
+                                }
+                                return id;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return name;
+        }
+
+        function patchTeamsPack() {
+            if (typeof Teams === 'undefined') return;
+
+            // packName 패치: 한글이면 영어로 변환 후 원본 로직 적용
+            if (!Teams._koPackNamePatched) {
+                var origPackName = Teams.packName;
+                Teams.packName = function(name) {
+                    if (!name) return '';
+                    // 한글이 포함되어 있으면 영어로 변환
+                    if (/[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(name)) {
+                        name = resolveKoToEnglish(name);
+                    }
+                    return origPackName.call(this, name);
+                };
+                Teams._koPackNamePatched = true;
+            }
+
+            // pack 함수 패치: set의 species, item, ability, moves를 영어로 변환 후 팩킹
+            if (!Teams._koPackPatched) {
+                var origPack = Teams.pack;
+                Teams.pack = function(team) {
+                    if (!team) return origPack.call(this, team);
+
+                    // 각 set의 한글 이름을 영어로 변환 (원본 데이터 변경 방지를 위해 복사)
+                    var convertedTeam = [];
+                    for (var i = 0; i < team.length; i++) {
+                        var set = team[i];
+                        var newSet = {};
+                        for (var key in set) {
+                            newSet[key] = set[key];
+                        }
+
+                        // species 변환
+                        if (newSet.species && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(newSet.species)) {
+                            newSet.species = resolveKoToEnglish(newSet.species);
+                        }
+                        // name 변환 (닉네임이 아닌 경우만)
+                        if (newSet.name && newSet.name === set.species) {
+                            newSet.name = newSet.species;
+                        }
+                        // item 변환
+                        if (newSet.item && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(newSet.item)) {
+                            newSet.item = resolveKoToEnglish(newSet.item);
+                        }
+                        // ability 변환
+                        if (newSet.ability && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(newSet.ability)) {
+                            newSet.ability = resolveKoToEnglish(newSet.ability);
+                        }
+                        // moves 변환
+                        if (newSet.moves) {
+                            newSet.moves = [];
+                            for (var m = 0; m < set.moves.length; m++) {
+                                var move = set.moves[m];
+                                if (move && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(move)) {
+                                    newSet.moves.push(resolveKoToEnglish(move));
+                                } else {
+                                    newSet.moves.push(move);
+                                }
+                            }
+                        }
+
+                        convertedTeam.push(newSet);
+                    }
+
+                    return origPack.call(this, convertedTeam);
+                };
+                Teams._koPackPatched = true;
+            }
+        }
+
+        patchTeamsPack();
+        window.addEventListener('load', patchTeamsPack);
+        setTimeout(patchTeamsPack, 500);
+        setTimeout(patchTeamsPack, 2000);
     })();
 })();
