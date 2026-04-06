@@ -909,13 +909,44 @@ function patchWhenReady(patchFn) {
 		return koName; // 변환 불가 시 원본 유지
 	}
 
+	// 영어 ID(소문자, 공백없음)를 정식 영어 표시명으로 변환
+	// PokePaste는 'Iron Valiant'같은 정식명이 있어야 이미지를 표시함
+	// 'ironvaliant' 같은 ID로는 이미지를 찾지 못함
+	function idToProperName(id, battleTable) {
+		if (!id || typeof id !== 'string') return id;
+		// 이미 공백/대문자가 있으면 정식명이므로 그대로
+		if (/[A-Z\s\-\']/.test(id)) return id;
+		// 한글이 있으면 koToEnName으로 처리
+		if (KO_RE_EX.test(id)) return koToEnName(id, battleTable);
+
+		var normalId = id.toLowerCase().replace(/[^a-z0-9]+/g, '');
+
+		// BattleAliases에서 정규화 확인
+		if (window.BattleAliases && window.BattleAliases[normalId]) {
+			normalId = window.BattleAliases[normalId];
+		}
+
+		// englishName에서 정식명 조회
+		var allTables = battleTable
+			? [battleTable, window.BattlePokedex, window.BattleMovedex, window.BattleAbilities, window.BattleItems]
+			: [window.BattlePokedex, window.BattleMovedex, window.BattleAbilities, window.BattleItems];
+		for (var i = 0; i < allTables.length; i++) {
+			if (allTables[i] && allTables[i][normalId] && allTables[i][normalId].englishName) {
+				return allTables[i][normalId].englishName;
+			}
+		}
+		return id; // 못 찾으면 원본 ID 반환
+	}
+
 	function dekoreanizeSet(set) {
 		if (!set) return set;
 		var s = Object.assign({}, set);
 
-		// 종족명
-		if (s.species && KO_RE_EX.test(s.species)) {
-			s.species = koToEnName(s.species, window.BattlePokedex);
+		// 종족명: 한글이든 영어ID든 항상 정식명으로 변환
+		if (s.species) {
+			s.species = KO_RE_EX.test(s.species)
+				? koToEnName(s.species, window.BattlePokedex)
+				: idToProperName(s.species, window.BattlePokedex);
 		}
 
 		// 닉네임: 한글이면 종족명으로 변환 시도, 여전히 한글이면 제거
@@ -924,21 +955,27 @@ function patchWhenReady(patchFn) {
 			s.name = KO_RE_EX.test(converted) ? '' : converted;
 		}
 
-		// 아이템
-		if (s.item && KO_RE_EX.test(s.item)) {
-			s.item = koToEnName(s.item, window.BattleItems);
+		// 아이템: 한글이든 영어ID든 정식명으로
+		if (s.item) {
+			s.item = KO_RE_EX.test(s.item)
+				? koToEnName(s.item, window.BattleItems)
+				: idToProperName(s.item, window.BattleItems);
 		}
 
-		// 특성
-		if (s.ability && KO_RE_EX.test(s.ability)) {
-			s.ability = koToEnName(s.ability, window.BattleAbilities);
+		// 특성: 한글이든 영어ID든 정식명으로
+		if (s.ability) {
+			s.ability = KO_RE_EX.test(s.ability)
+				? koToEnName(s.ability, window.BattleAbilities)
+				: idToProperName(s.ability, window.BattleAbilities);
 		}
 
-		// 기술 목록
+		// 기술 목록: 한글이든 영어ID든 정식명으로
 		if (s.moves && Array.isArray(s.moves)) {
 			s.moves = s.moves.map(function(move) {
-				if (!move || !KO_RE_EX.test(move)) return move;
-				return koToEnName(move, window.BattleMovedex);
+				if (!move) return move;
+				return KO_RE_EX.test(move)
+					? koToEnName(move, window.BattleMovedex)
+					: idToProperName(move, window.BattleMovedex);
 			});
 		}
 
