@@ -801,3 +801,148 @@ function patchWhenReady(patchFn) {
 		return true;
 	});
 })();
+
+// ============================================
+// Storage.exportTeam 패치: PokePaste 업로드 시 한글 → 영어 변환
+// 문제: exportTeam이 curSet의 한글 이름을 그대로 텍스트로 내보내서
+//       PokePaste 서버가 해당 팀을 파싱하지 못함
+// 해결: exportTeam 호출 전 set의 한글 필드를 영어로 역변환
+// 방법: BattlePokedex, BattleMovedex, BattleAbilities, BattleItems에서
+//       한글명 → ID 역인덱스를 빌드 후, Dex로 공식 영어명 얻기
+// ============================================
+(function() {
+	var KO_RE_EX = /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/;
+
+	// 한글명→ID 역인덱스 캐시
+	var _reverseIdx = null;
+
+	function buildReverseIndex() {
+		if (_reverseIdx) return _reverseIdx;
+		_reverseIdx = { pokemon: {}, moves: {}, abilities: {}, items: {} };
+
+		// BattlePokedex: {id: {name: '한글'}}
+		if (window.BattlePokedex) {
+			for (var id in BattlePokedex) {
+				var p = BattlePokedex[id];
+				if (p && p.name && KO_RE_EX.test(p.name)) {
+					_reverseIdx.pokemon[p.name] = id;
+				}
+			}
+		}
+		// BattleMovedex: {id: {name: '한글'}}
+		if (window.BattleMovedex) {
+			for (var id in BattleMovedex) {
+				var m = BattleMovedex[id];
+				if (m && m.name && KO_RE_EX.test(m.name)) {
+					_reverseIdx.moves[m.name] = id;
+				}
+			}
+		}
+		// BattleAbilities: {id: {name: '한글'}}
+		if (window.BattleAbilities) {
+			for (var id in BattleAbilities) {
+				var a = BattleAbilities[id];
+				if (a && a.name && KO_RE_EX.test(a.name)) {
+					_reverseIdx.abilities[a.name] = id;
+				}
+			}
+		}
+		// BattleItems: {id: {name: '한글'}}
+		if (window.BattleItems) {
+			for (var id in BattleItems) {
+				var it = BattleItems[id];
+				if (it && it.name && KO_RE_EX.test(it.name)) {
+					_reverseIdx.items[it.name] = id;
+				}
+			}
+		}
+		console.log('[한글화] 역인덱스 빌드 완료: pokemon=' + Object.keys(_reverseIdx.pokemon).length
+			+ ', moves=' + Object.keys(_reverseIdx.moves).length
+			+ ', abilities=' + Object.keys(_reverseIdx.abilities).length
+			+ ', items=' + Object.keys(_reverseIdx.items).length);
+		return _reverseIdx;
+	}
+
+	// 한글명 → 영어 공식명 변환 (역인덱스 사용)
+	function koToEnName(name, category, dexGetter) {
+		if (!name || typeof name !== 'string' || !KO_RE_EX.test(name)) return name;
+		var idx = buildReverseIndex();
+		var table = idx[category] || {};
+		var id = table[name];
+		if (!id) return name; // 역인덱스에 없으면 그대로 반환
+		// Dex에서 공식 영어 표시명 가져오기
+		if (dexGetter && window.Dex) {
+			try {
+				var obj = dexGetter(id);
+				if (obj && obj.exists && obj.name) return obj.name;
+			} catch(e) {}
+		}
+		// Dex 조회 실패 시 id 반환 (pokepaste는 id도 파싱 가능)
+		return id;
+	}
+
+	function dekoreanizeSet(set) {
+		if (!set) return set;
+		var s = Object.assign({}, set);
+
+		// 종족명
+		if (s.species && KO_RE_EX.test(s.species)) {
+			s.species = koToEnName(s.species, 'pokemon', Dex && Dex.species && Dex.species.get.bind(Dex.species));
+		}
+
+		// 닉네임 (한글인 경우 종족명 역변환 시도)
+		if (s.name && KO_RE_EX.test(s.name)) {
+			s.name = koToEnName(s.name, 'pokemon', Dex && Dex.species && Dex.species.get.bind(Dex.species));
+		}
+
+		// 아이템
+		if (s.item && KO_RE_EX.test(s.item)) {
+			s.item = koToEnName(s.item, 'items', Dex && Dex.items && Dex.items.get.bind(Dex.items));
+		}
+
+		// 특성
+		if (s.ability && KO_RE_EX.test(s.ability)) {
+			s.ability = koToEnName(s.ability, 'abilities', Dex && Dex.abilities && Dex.abilities.get.bind(Dex.abilities));
+		}
+
+		// 기술 목록
+		if (s.moves && Array.isArray(s.moves)) {
+			s.moves = s.moves.map(function(move) {
+				if (!move || !KO_RE_EX.test(move)) return move;
+				return koToEnName(move, 'moves', Dex && Dex.moves && Dex.moves.get.bind(Dex.moves));
+			});
+		}
+
+		return s;
+	}
+
+	patchWhenReady(function() {
+		if (typeof Storage === 'undefined' || !Storage.exportTeam) return false;
+		if (Storage._koExportPatch) return true;
+		// BattlePokedex가 아직 로드되지 않았으면 대기
+		if (typeof BattlePokedex === 'undefined' || typeof BattleMovedex === 'undefined') return false;
+
+		var _origExport = Storage.exportTeam;
+		Storage.exportTeam = function(team, gen, hidestats) {
+			if (!team) return _origExport.call(this, team, gen, hidestats);
+			// 문자열(packed)이면 unpack 후 처리
+			var resolvedTeam = team;
+			if (typeof team === 'string') {
+				if (team.indexOf('\n') >= 0) {
+					// 이미 text 포맷 → 그대로 반환 (재귀 방지)
+					return _origExport.call(this, team, gen, hidestats);
+				}
+				resolvedTeam = Storage.unpackTeam(team);
+			}
+			if (Array.isArray(resolvedTeam)) {
+				// 역인덱스를 최신 상태로 리셋 (ko-desc.js가 나중에 로드될 수 있으므로)
+				_reverseIdx = null;
+				resolvedTeam = resolvedTeam.map(dekoreanizeSet);
+			}
+			return _origExport.call(this, resolvedTeam, gen, hidestats);
+		};
+		Storage._koExportPatch = true;
+		console.log('[한글화] Storage.exportTeam 한글→영어 역변환 패치 완료 (PokePaste 업로드 대응)');
+		return true;
+	});
+})();
