@@ -1,0 +1,49 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \":*)",
+      "Bash(curl -s -L -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" -H \"Accept-Language: ko-KR,ko;q=0.9\" \"https://pokemon.fandom.com/ko/wiki/%EC%83%81%EC%B2%98%EC%95%BD\")",
+      "Bash(gh api repos/2022149025/pokemonshowdown/pages)",
+      "Bash(git -C \"c:/Users/kcu08/Desktop/showdown\" branch)",
+      "Bash(grep -v \"\\\\.map$\")",
+      "Bash(grep -n \"ko-data\\\\|ko-translation\\\\|ko-battle\" \"c:/Users/kcu08/Desktop/showdown/scripts/\"*.py)",
+      "Bash(grep -l \"ko-translation\\\\|KO = {\" \"c:/Users/kcu08/.claude/projects/c--Users-kcu08-Desktop-showdown/\"*.jsonl)",
+      "Bash(python3:*)",
+      "Bash(while IFS= read -r line)",
+      "Bash(do echo \"$line\")",
+      "Bash(done)",
+      "Bash(for f in *.jsonl)",
+      "Bash(do echo \"=== $f ===\")",
+      "Read(//c/Users/kcu08/Desktop/showdown/**)",
+      "Bash(\"c:/Users/kcu08/Desktop/ko_line2.txt\")",
+      "Bash(grep -l \"ko-custom\\\\|ko_custom\" \"c:/Users/kcu08/.claude/projects/c--Users-kcu08-Desktop-showdown/\"*.jsonl)",
+      "Bash(python3 -c \"print\\(''hello''\\)\")",
+      "Bash(python -c \"print\\(''hello''\\)\")",
+      "Bash(python:*)",
+      "Bash(ls c:/Users/kcu08/Desktop/showdown/*.html)",
+      "Bash(ls c:/Users/kcu08/Desktop/showdown/play.pokemonshowdown.com/*.html)",
+      "Bash(cat c:/Users/kcu08/Desktop/showdown/scripts/deploy*)",
+      "Bash(ls /tmp/gh-pages-work/*.html)",
+      "Bash(ls /tmp/gh-pages-work/js/ko* /tmp/gh-pages-work/style/ko*)",
+      "Bash(ls -la /c/Users/kcu08/AppData/Local/Temp/gh-pages-work/*.html)",
+      "Bash(curl -s \"https://play.pokemonshowdown.com/data/pokedex-mini.js\")",
+      "Bash(curl -s 'https://play.pokemonshowdown.com/js/client-topbar.js')",
+      "Bash(curl -s 'https://play.pokemonshowdown.com/js/client.js')",
+      "Bash(curl -s 'https://play.pokemonshowdown.com/js/client-teambuilder.js')",
+      "Bash(curl -s 'https://play.pokemonshowdown.com/js/battle-dex-search.js')",
+      "Bash(curl -s 'https://play.pokemonshowdown.com/js/search.js')",
+      "Bash(curl -s 'https://play.pokemonshowdown.com/js/battledata.js')",
+      "WebFetch(domain:play.pokemonshowdown.com)",
+      "WebFetch(domain:2022149025.github.io)",
+      "Bash(grep -n \"action\\\\.php\\\\|ajaxPrefilter\\\\|challstr\\\\|$\\\\.post\\\\|$\\\\.ajax\\\\|XMLHttpRequest\" \"C:/Users/kcu08/AppData/Local/Temp/gh-pages-work/js/client.js\")",
+      "Bash(git add js/client.js)",
+      "Bash(git commit -m \"fix\\(login\\): route action.php through Cloudflare Worker proxy\")",
+      "Bash(git push myfork gh-pages)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\kcu08\\Desktop\\showdown\\data",
+      "c:\\Users\\kcu08\\Desktop",
+      "C:\\Users\\kcu08\\AppData\\Local\\Temp\\gh-pages-work"
+    ]
+  }
+}

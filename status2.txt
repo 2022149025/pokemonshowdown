@@ -1,0 +1,68 @@
+﻿On branch gh-pages
+Your branch is up to date with 'myfork/gh-pages'.
+
+You are currently cherry-picking commit 72392f7b.
+  (fix conflicts and run "git cherry-pick --continue")
+  (use "git cherry-pick --skip" to skip this patch)
+  (use "git cherry-pick --abort" to cancel the cherry-pick operation)
+
+Changes to be committed:
+	modified:   js/client-teambuilder.js
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+	both added:      js/ko-desc.js
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.claude-code-mcp.log
+	.claude/
+	AGENTS.md
+	PRD.md
+	abil_descs.txt
+	config/testclient-key.js
+	data/ko_battle_text.json
+	data/ko_battle_text_cache.json
+	data/ko_translation_cache.json
+	data/text.json
+	debug_addpoke.png
+	debug_after_click.png
+	debug_after_fix.png
+	debug_newteam.png
+	debug_newteam2.png
+	debug_search.png
+	debug_tb_nav.png
+	extract_text.js
+	move_descs.txt
+	node_modules/
+	play.pokemonshowdown.com/
+	replay.pokemonshowdown.com/
+	scripts/
+	status.txt
+	status2.txt
+	teams.pokemonshowdown.com/
+	temp_abil.html
+	temp_text.js
+	test-appstate.js
+	test-backbone.js
+	test-config.js
+	test-deploy.js
+	test-deploy2.js
+	test-deploy3.js
+	test-deploy4.js
+	test-final.js
+	test-iframe.js
+	test-network.js
+	test-picon.js
+	test-picon2.js
+	test-socket.js
+	test-sprites.js
+	test-sprites2.js
+	test_puppeteer.js
+	test_selenium.py
+	test_sprite_fix.js
+	test_sprite_fix2.js
+	translate_battle_text.py
+	untrans_abils.txt
+	untrans_moves.txt
+

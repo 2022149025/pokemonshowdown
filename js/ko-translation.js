@@ -926,7 +926,12 @@ function patchWhenReady(patchFn) {
 			normalId = window.BattleAliases[normalId];
 		}
 
-		// englishName에서 정식명 조회
+		// 1순위: ko-desc.js가 만든 영어명 캐시 (_EnglishNameCache)
+		if (window._EnglishNameCache && window._EnglishNameCache[normalId]) {
+			return window._EnglishNameCache[normalId];
+		}
+
+		// 2순위: BattleXxx[id].englishName 조회
 		var allTables = battleTable
 			? [battleTable, window.BattlePokedex, window.BattleMovedex, window.BattleAbilities, window.BattleItems]
 			: [window.BattlePokedex, window.BattleMovedex, window.BattleAbilities, window.BattleItems];

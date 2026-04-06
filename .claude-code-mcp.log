@@ -1,0 +1,32 @@
+[2026-03-07T11:58:00.037Z] Starting MCP server for project: C:\Users\kcu08\Desktop\showdown...
+[2026-03-07T11:58:00.037Z] Log file: C:\Users\kcu08\Desktop\showdown\.claude-code-mcp.log
+[2026-03-07T11:58:00.044Z] Emacs bridge listening on port 52068
+[2026-03-07T11:58:00.061Z] Failed to notify Emacs via emacsclient: Error: Command failed: emacsclient --eval '(claude-code-mcp-register-port "C:\Users\kcu08\Desktop\showdown" 52068)'
+'emacsclient'��(��) ���� �Ǵ� �ܺ� ����, ������ �� �ִ� ���α׷�, �Ǵ�
+��ġ ������ �ƴմϴ�.
+
+[2026-03-07T11:58:00.062Z] Wrote port info to C:\Users\kcu08\AppData\Local\Temp\claude-code-mcp-C__Users_kcu08_Desktop_showdown.port
+[2026-03-07T11:58:00.063Z] Resources registered successfully
+[2026-03-07T11:58:00.064Z] MCP server running for session C:\Users\kcu08\Desktop\showdown, Emacs bridge on port 52068
+[2026-03-07T11:58:00.068Z] MCP server initialized for session C:\Users\kcu08\Desktop\showdown, Emacs bridge on port 52068
+[2026-03-07T11:58:00.068Z] Starting ping monitoring for session C:\Users\kcu08\Desktop\showdown
+[2026-03-07T11:58:00.069Z] Client capabilities: {"roots":{}}
+[2026-03-07T11:58:00.070Z] Ping successful for session C:\Users\kcu08\Desktop\showdown
+[2026-03-07T11:58:30.088Z] Uncaught exception: EPIPE: broken pipe, write
+[2026-03-07T11:58:30.088Z] Stack: Error: EPIPE: broken pipe, write
+    at Socket._write (node:internal/net:75:18)
+    at writeOrBuffer (node:internal/streams/writable:570:12)
+    at _write (node:internal/streams/writable:499:10)
+    at Writable.write (node:internal/streams/writable:508:10)
+    at C:\Users\kcu08\AppData\Local\npm-cache\_npx\86e1b677e652a319\node_modules\@modelcontextprotocol\sdk\dist\cjs\server\stdio.js:72:30
+    at new Promise (<anonymous>)
+    at StdioServerTransport.send (C:\Users\kcu08\AppData\Local\npm-cache\_npx\86e1b677e652a319\node_modules\@modelcontextprotocol\sdk\dist\cjs\server\stdio.js:70:16)
+    at C:\Users\kcu08\AppData\Local\npm-cache\_npx\86e1b677e652a319\node_modules\@modelcontextprotocol\sdk\dist\cjs\shared\protocol.js:726:33
+    at new Promise (<anonymous>)
+    at Server.request (C:\Users\kcu08\AppData\Local\npm-cache\_npx\86e1b677e652a319\node_modules\@modelcontextprotocol\sdk\dist\cjs\shared\protocol.js:598:16)
+[2026-03-07T11:58:30.088Z] Project root: C:\Users\kcu08\Desktop\showdown
+[2026-03-07T11:58:30.114Z] Failed to unregister port: Error: Command failed: emacsclient --eval '(claude-code-mcp-unregister-port "C:\Users\kcu08\Desktop\showdown")'
+'emacsclient'��(��) ���� �Ǵ� �ܺ� ����, ������ �� �ִ� ���α׷�, �Ǵ�
+��ġ ������ �ƴմϴ�.
+
+[2026-03-07T11:58:30.115Z] Removed port file C:\Users\kcu08\AppData\Local\Temp\claude-code-mcp-C__Users_kcu08_Desktop_showdown.port

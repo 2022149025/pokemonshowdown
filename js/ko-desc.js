@@ -13799,9 +13799,32 @@
         applyOther(window.BattleAbilities, koAbilities);
     }
 
-    applyDescs();
-    window.addEventListener('load', applyDescs);
-    setTimeout(applyDescs, 3000);
+    // applyDescs 래퍼: 실행 후 영어명 캐시를 업데이트
+    function applyDescsAndCache() {
+        applyDescs();
+        // ID → 정식 영어명 맵 생성 (englishName로 저장된 값)
+        if (!window._EnglishNameCache) window._EnglishNameCache = {};
+        var cache = window._EnglishNameCache;
+        var tables = [
+            { data: window.BattlePokedex },
+            { data: window.BattleMovedex },
+            { data: window.BattleItems },
+            { data: window.BattleAbilities }
+        ];
+        for (var t = 0; t < tables.length; t++) {
+            var tbl = tables[t].data;
+            if (!tbl) continue;
+            for (var id in tbl) {
+                if (tbl[id] && tbl[id].englishName && !cache[id]) {
+                    cache[id] = tbl[id].englishName;
+                }
+            }
+        }
+    }
+
+    applyDescsAndCache();
+    window.addEventListener('load', applyDescsAndCache);
+    setTimeout(applyDescsAndCache, 3000);
 
     // 한국어 검색을 위해 ko 데이터 전역 노출
     window._KoData = { pokemon: koPokedex, moves: koMoves, items: koItems, abilities: koAbilities };

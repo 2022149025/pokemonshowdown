@@ -3033,13 +3033,13 @@
         "name": "춤추새"
     },
     "oricoriopompom": {
-        "name": "춤추새-파지직스타일"
+        "name": "춤추새 파지직스타일"
     },
     "oricoriopau": {
-        "name": "춤추새-훌라훌라스타일"
+        "name": "춤추새 파우파우스타일"
     },
     "oricoriosensu": {
-        "name": "춤추새-하늘하늘스타일"
+        "name": "춤추새 (저승춤 스타일)"
     },
     "cutiefly": {
         "name": "에블리"
@@ -3570,7 +3570,7 @@
         "name": "데인차"
     },
     "sinisteaantique": {
-        "name": "데인차(진품)"
+        "name": "싸리용 (진품)"
     },
     "polteageist": {
         "name": "포트데스"
@@ -3897,13 +3897,13 @@
         "name": "시비꼬"
     },
     "squawkabillyblue": {
-        "name": "시비꼬-파랑깃털"
+        "name": "꼬이밍고(파랑색)"
     },
     "squawkabillyyellow": {
-        "name": "시비꼬-노랑깃털"
+        "name": "시비꼬 노랑깃털"
     },
     "squawkabillywhite": {
-        "name": "시비꼬-흰깃털"
+        "name": "찌리비(하얀색 깃털)"
     },
     "nacli": {
         "name": "베베솔트"
@@ -4056,19 +4056,19 @@
         "name": "싸리용"
     },
     "tatsugiridroopy": {
-        "name": "싸리용(쳐진모습)"
+        "name": "싸리용 처진 모습"
     },
     "tatsugiristretchy": {
-        "name": "싸리용(쭉뻗은모습)"
+        "name": "꿈트렁 (늘어진 모습)"
     },
     "tatsugiricurlymega": {
-        "name": "메가싸리용(젖혀진모습)"
+        "name": "꿈트렁 꼬불꼬불한 모습 (메가)"
     },
     "tatsugiridroopymega": {
-        "name": "메가싸리용(쳐진모습)"
+        "name": "메가싸리용(처진폼)"
     },
     "tatsugiristretchymega": {
-        "name": "메가싸리용(쭉뻗은모습)"
+        "name": "어써러구리(쭉쭉이 모습)"
     },
     "annihilape": {
         "name": "저승갓숭"
@@ -4083,7 +4083,7 @@
         "name": "노고고치"
     },
     "dudunsparcethreesegment": {
-        "name": "노고고치(세마디폼)"
+        "name": "파비포켓(삼절형)"
     },
     "kingambit": {
         "name": "대도각참"
@@ -13799,9 +13799,32 @@
         applyOther(window.BattleAbilities, koAbilities);
     }
 
-    applyDescs();
-    window.addEventListener('load', applyDescs);
-    setTimeout(applyDescs, 3000);
+    // applyDescs 래퍼: 실행 후 영어명 캐시를 업데이트
+    function applyDescsAndCache() {
+        applyDescs();
+        // ID → 정식 영어명 맵 생성 (englishName로 저장된 값)
+        if (!window._EnglishNameCache) window._EnglishNameCache = {};
+        var cache = window._EnglishNameCache;
+        var tables = [
+            { data: window.BattlePokedex },
+            { data: window.BattleMovedex },
+            { data: window.BattleItems },
+            { data: window.BattleAbilities }
+        ];
+        for (var t = 0; t < tables.length; t++) {
+            var tbl = tables[t].data;
+            if (!tbl) continue;
+            for (var id in tbl) {
+                if (tbl[id] && tbl[id].englishName && !cache[id]) {
+                    cache[id] = tbl[id].englishName;
+                }
+            }
+        }
+    }
+
+    applyDescsAndCache();
+    window.addEventListener('load', applyDescsAndCache);
+    setTimeout(applyDescsAndCache, 3000);
 
     // 한국어 검색을 위해 ko 데이터 전역 노출
     window._KoData = { pokemon: koPokedex, moves: koMoves, items: koItems, abilities: koAbilities };
@@ -14096,6 +14119,7 @@
                 var origPackName = Teams.packName;
                 Teams.packName = function(name) {
                     if (!name) return '';
+                    // 한글이 포함되어 있으면 영어로 변환
                     if (/[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(name)) {
                         name = resolveKoToEnglish(name);
                     }
@@ -14104,12 +14128,13 @@
                 Teams._koPackNamePatched = true;
             }
 
-            // pack 함수 패치
+            // pack 함수 패치: set의 species, item, ability, moves를 영어로 변환 후 팩킹
             if (!Teams._koPackPatched) {
                 var origPack = Teams.pack;
                 Teams.pack = function(team) {
                     if (!team) return origPack.call(this, team);
 
+                    // 각 set의 한글 이름을 영어로 변환 (원본 데이터 변경 방지를 위해 복사)
                     var convertedTeam = [];
                     for (var i = 0; i < team.length; i++) {
                         var set = team[i];
@@ -14118,18 +14143,23 @@
                             newSet[key] = set[key];
                         }
 
+                        // species 변환
                         if (newSet.species && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(newSet.species)) {
                             newSet.species = resolveKoToEnglish(newSet.species);
                         }
+                        // name 변환 (닉네임이 아닌 경우만)
                         if (newSet.name && newSet.name === set.species) {
                             newSet.name = newSet.species;
                         }
+                        // item 변환
                         if (newSet.item && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(newSet.item)) {
                             newSet.item = resolveKoToEnglish(newSet.item);
                         }
+                        // ability 변환
                         if (newSet.ability && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(newSet.ability)) {
                             newSet.ability = resolveKoToEnglish(newSet.ability);
                         }
+                        // moves 변환
                         if (newSet.moves) {
                             newSet.moves = [];
                             for (var m = 0; m < set.moves.length; m++) {
@@ -14141,60 +14171,13 @@
                                 }
                             }
                         }
+
                         convertedTeam.push(newSet);
                     }
+
                     return origPack.call(this, convertedTeam);
                 };
                 Teams._koPackPatched = true;
-            }
-
-            // exportSet 함수 패치 (텍스트 형태 다운로드 및 내보내기용)
-            if (!Teams._koExportSetPatched) {
-                var origExportSet = Teams.exportSet;
-                Teams.exportSet = function(set, dex, newFormat) {
-                    if (!set) return origExportSet.call(this, set, dex, newFormat);
-
-                    var newSet = {};
-                    for (var key in set) {
-                        newSet[key] = set[key];
-                    }
-
-                    if (newSet.species && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(newSet.species)) {
-                        newSet.species = resolveKoToEnglish(newSet.species);
-                    }
-                    if (newSet.name && newSet.name === set.species) {
-                        newSet.name = newSet.species;
-                    } else if (newSet.name && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(newSet.name)) {
-                        newSet.name = resolveKoToEnglish(newSet.name);
-                    }
-                    if (newSet.item && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(newSet.item)) {
-                        newSet.item = resolveKoToEnglish(newSet.item);
-                    }
-                    if (newSet.ability && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(newSet.ability)) {
-                        newSet.ability = resolveKoToEnglish(newSet.ability);
-                    }
-                    if (newSet.teraType && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(newSet.teraType)) {
-                        newSet.teraType = resolveKoToEnglish(newSet.teraType);
-                    }
-                    if (newSet.moves) {
-                        newSet.moves = [];
-                        for (var m = 0; m < set.moves.length; m++) {
-                            var move = set.moves[m];
-                            if (move && move.startsWith("잠재파워")) {
-                                var hpType = move.replace("잠재파워-", "").replace("잠재파워", "").replace(" ", "").trim();
-                                if(!hpType) hpType = "Dark";
-                                newSet.moves.push("Hidden Power [" + hpType + "]");
-                            } else if (move && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(move)) {
-                                newSet.moves.push(resolveKoToEnglish(move));
-                            } else {
-                                newSet.moves.push(move);
-                            }
-                        }
-                    }
-
-                    return origExportSet.call(this, newSet, dex, newFormat);
-                };
-                Teams._koExportSetPatched = true;
             }
         }
 

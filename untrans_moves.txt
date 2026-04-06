@@ -1,0 +1,231 @@
++1 SpD, user's next Electric move 2x power.
+1.5x damage if foe holds an item. Removes item.
+1/8 of target's HP is restored to user every turn.
+10% chance to burn. 10% chance to flinch.
+10% chance to freeze. 10% chance to flinch.
+10% chance to freeze. Super effective on Water.
+10% chance to frz foe(s). Ramnarok transforms.
+10% chance to paralyze. 10% chance to flinch.
+100% burns a target that had a stat rise this turn.
+100% confuse target that had a stat rise this turn.
+100% flinch. Fails unless target using priority.
+20% burn. Recovers 50% dmg dealt. Thaws foe(s).
+20% chance to paralyze or burn or freeze target.
+20% psn. Physical+contact if it would be stronger.
+30% chance to confuse target. Can't miss in rain.
+30% chance to paralyze. Can't miss in rain.
+30% confusion. User loses 50% max HP if miss.
+40, 80, 120 power, or heals target 1/4 max HP.
+5 turns. Can't status,-Dragon power vs grounded.
+5 turns. Grounded: +Electric power, can't sleep.
+5 turns. Grounded: +Grass power, +1/16 max HP.
+5 turns. Grounded: +Psychic power, priority-safe.
+50% chance to sleep, poison, or paralyze target.
+A sleeping target is hurt by 1/4 max HP per turn.
+A target of the opposite gender gets infatuated.
+All active Pokemon consume held Berries.
+All active Pokemon will faint in 3 turns.
+Ally: Crit ratio +1, or +2 if ally is Dragon type.
+Always 160 power. Ignores Abilities.
+Always does 20 HP of damage.
+Always results in a critical hit.
+Base move affects power. 50% restores Berries.
+Base move affects power. Allies: +1/6 max HP.
+Base move affects power. Allies: Aurora Veil.
+Base move affects power. Allies: Crit Ratio +1.
+Base move affects power. Allies: status cured.
+Base move affects power. Bypasses Max Guard.
+Base move affects power. Ends Terrain, hazards.
+Base move affects power. Foes: -1/6 HP, 4 turns.
+Base move affects power. Foes: Stealth Rock.
+Base move affects power. Foes: Steel hazard.
+Base move affects power. Foes: Tormented.
+Base move affects power. Foes: bound 4-5 turns.
+Base move affects power. Foes: confused.
+Base move affects power. Foes: infatuated.
+Base move affects power. Foes: last move -2 PP.
+Base move affects power. Foes: paralyzed.
+Base move affects power. Foes: poisoned.
+Base move affects power. Foes: psn or par.
+Base move affects power. Foes: slp or psn or par.
+Base move affects power. Foes: trapped.
+Base move affects power. Starts Electric Terrain.
+Base move affects power. Starts Grassy Terrain.
+Base move affects power. Starts Gravity.
+Base move affects power. Starts Hail.
+Base move affects power. Starts Misty Terrain.
+Base move affects power. Starts Psychic Terrain.
+Base move affects power. Starts Rain Dance.
+Base move affects power. Starts Sandstorm.
+Base move affects power. Starts Sunny Day.
+Base move affects power. Target: 50% Yawn.
+Bounces back certain non-damaging moves.
+Bounces turn 1. Hits turn 2. 30% paralyze.
+Bypasses protection without breaking it.
+Can hit Pokemon using Bounce, Fly, or Sky Drop.
+Cannot be selected the turn after it's used.
+Changes user's type by terrain (default Normal).
+Changes user's type to match its first move.
+Changes user's type to resist target's last move.
+Charges turn 1. Hits turn 2. 30% burn.
+Charges turn 1. Hits turn 2. 30% paralyze.
+Charges turn 1. Hits turn 2. No charge in sunlight.
+Charges, then hits foe(s) turn 2. High crit ratio.
+Charges, then hits turn 2. 30% flinch. High crit.
+Combines Flying in its type effectiveness.
+Copies a foe at 1.5x power. User must be faster.
+Copies target's stats, moves, types, and Ability.
+Cures target's status; heals user 1/2 max HP if so.
+Deals 1.3333x damage with supereffective hits.
+Deals 1/8 max HP each turn; 1/4 on Steel, Water.
+Destroys screens. Type depends on user's form.
+Digs underground turn 1, strikes turn 2.
+Disappears turn 1. Hits turn 2. Breaks protection.
+Dives underwater turn 1, strikes turn 2.
+Does damage equal to 1/2 target's current HP.
+Does damage equal to 3/4 target's current HP.
+During Electric Terrain: 1.5x power.
+During Sunny Day: 1.5x damage instead of half.
+Eliminates all stat changes.
+Ends the effects of terrain.
+Fails if there is no terrain active. Ends the terrain.
+Fails unless each known move has been used.
+Fighting, Normal hit Ghost. Evasiveness ignored.
+Flies up on first turn, then strikes the next turn.
+For 3 turns, target floats but moves can't miss it.
+For 5 turns, Electric-type attacks have 1/3 power.
+For 5 turns, Fire-type attacks have 1/3 power.
+For 5 turns, a sandstorm rages. Rock: 1.5x SpD.
+For 5 turns, all held items have no effect.
+For 5 turns, damage to allies halved. Snow only.
+For 5 turns, hail crashes down.
+For 5 turns, heavy rain powers Water moves.
+For 5 turns, intense sunlight powers Fire moves.
+For 5 turns, physical damage to allies is halved.
+For 5 turns, protects user's party from stat drops.
+For 5 turns, protects user's party from status.
+For 5 turns, shields user's party from critical hits.
+For 5 turns, special damage to allies is halved.
+Goes last. For 5 turns, turn order is reversed.
+Has 1/2 recoil.
+Has 1/4 recoil.
+Has 33% recoil.
+Has 33% recoil. 10% chance to burn. Thaws user.
+Has 33% recoil. 10% chance to paralyze target.
+Has a 30% chance this move's power is doubled.
+Heals 50% HP. Flying-type removed 'til turn ends.
+High critical hit ratio. 10% chance to burn.
+High critical hit ratio. 10% chance to poison.
+High critical hit ratio. Cannot be redirected.
+High critical hit ratio. Type depends on user's form.
+Hits first. First turn out only. 100% flinch chance.
+Hits twice. Doubles: Tries to hit each foe once.
+Hits two turns after being used.
+Hurts foes on switch-in. Factors Rock weakness.
+Hurts grounded foes on switch-in. Max 3 layers.
+If a foe is switching out, hits it at 2x power.
+If hit by an attack, returns 1.5x damage.
+If hit by physical attack, returns double damage.
+If hit by special attack, returns double damage.
+If using a Fire move, target loses 1/4 max HP.
+Ignores the Abilities of other Pokemon.
+Lasts 3 turns. Active Pokemon cannot fall asleep.
+Less power as user's HP decreases. Hits foe(s).
+Max 102 power at maximum Happiness.
+Max 102 power at minimum Happiness.
+Max happiness: 102 power. Can't miss.
+More power the fewer PP this move has left.
+More power with more uses of Stockpile.
+Nearly always goes first.
+Nearly always goes first. First turn out only.
+No additional effect. Hits foe(s).
+No competitive use.
+Normal moves become Electric type this turn.
+Nullifies Detect, Protect, and Quick/Wide Guard.
+OHKOs non-Ice targets. Fails if user's lower level.
+One adjacent ally's move power is 1.5x this turn.
+Permanently copies the last move target used.
+Picks a random move.
+Poisons foes, frees user from hazards/bind/leech.
+Poisons grounded foes on switch-in. Max 2 layers.
+Power doubles and type varies in each weather.
+Power doubles during Bounce, Fly, and Sky Drop.
+Power doubles with each hit, up to 160.
+Power doubles with each hit. Repeats for 5 turns.
+Power increases when used on consecutive turns.
+Power is equal to the base move's Z-Power.
+Prevents all Pokemon from switching next turn.
+Prevents both user and target from switching out.
+Protects allies from Status moves this turn.
+Protects allies from damaging attacks. Turn 1 only.
+Protects allies from multi-target moves this turn.
+Protects allies from priority attacks this turn.
+Protects from damaging attacks. Contact: burn.
+Protects from moves. Contact: loses 1/8 max HP.
+Protects from moves. Contact: poison.
+Protects user from moves & Max Moves this turn.
+Psychic hits Dark. Evasiveness ignored.
+Random damage equal to 0.5x-1.5x user's level.
+Revives a fainted Pokemon to 50% HP.
+Scatters coins.
+Sets a layer of Spikes on the opposing side.
+Shares HP of user and target equally.
+Starts Snow. User switches out.
+Steals target's boosts before dealing damage.
+Summons Leech Seed.
+Summons Light Screen.
+Summons Psychic Terrain.
+Summons Reflect.
+Swaps all stat changes with target.
+Swaps user's field effects with the opposing side.
+Target can't select the same move twice in a row.
+Target can't use status moves its next 3 turns.
+Target repeats its last move for its next 3 turns.
+Target's foes' moves are redirected to it this turn.
+Terapagos-Stellar: Stellar type, hits both foes.
+The target immediately uses its last used move.
+The target is cured of its burn.
+The target's Ability becomes Insomnia.
+The target's Ability becomes Simple.
+Traps/grounds user; heals 1/16 max HP per turn.
+Type varies based on the held Drive.
+Type varies based on the held Memory.
+Type varies based on the held Plate.
+Until the end of the next turn, user's moves crit.
+Use with Fire or Water Pledge for added effect.
+Use with Grass or Fire Pledge for added effect.
+Use with Grass or Water Pledge for added effect.
+User and allies: healed 1/4 max HP, status cured.
+User and ally swap positions; using again can fail.
+User and ally's Abilities become target's Ability.
+User and foe fly up turn 1. Damages on turn 2.
+User cannot move next turn.
+User cures its burn, poison, or paralysis.
+User faints. Next hurt Pokemon is fully healed.
+User faints. User on Misty Terrain: 1.5x power.
+User gains 1/2 HP inflicted. Sleeping target only.
+User is hurt by 50% of its max HP if it misses.
+User loses 1/4 of its max HP.
+User loses 50% max HP.
+User must be asleep. 30% chance to flinch target.
+User must be asleep. Uses another known move.
+User must take physical damage before moving.
+User on Grassy Terrain: +1 priority.
+User on Psychic Terrain: 1.5x power, hits foes.
+User on terrain: power doubles, type varies.
+User restores 1/2 its max HP; 2/3 in Sandstorm.
+User sleeps 2 turns and restores HP and status.
+User steals certain support moves to use itself.
+User survives attacks this turn with at least 1 HP.
+User switches out.
+User switches, passing stat changes and more.
+User takes 1/2 its max HP to pass a substitute.
+User takes 1/4 its max HP to put in a substitute.
+User takes sure-hit 2x damage until its next turn.
+User's Electric type: typeless; must be Electric.
+User's Fire type becomes typeless; must be Fire.
+Uses a random move known by a team member.
+Uses the last move used in the battle.
+Usually goes first. Fails if target is not attacking.
+Usually goes first. Hits 2-5 times in one turn.
+Waits 2 turns; deals double the damage taken.
