@@ -863,22 +863,50 @@ function patchWhenReady(patchFn) {
 		return _reverseIdx;
 	}
 
-	// 한글명 → 영어 공식명 변환 (역인덱스 사용)
-	function koToEnName(name, category, dexGetter) {
-		if (!name || typeof name !== 'string' || !KO_RE_EX.test(name)) return name;
-		var idx = buildReverseIndex();
-		var table = idx[category] || {};
-		var id = table[name];
-		if (!id) return name; // 역인덱스에 없으면 그대로 반환
-		// Dex에서 공식 영어 표시명 가져오기
-		if (dexGetter && window.Dex) {
-			try {
-				var obj = dexGetter(id);
-				if (obj && obj.exists && obj.name) return obj.name;
-			} catch(e) {}
+	// 한글명 → 영어 공식명 변환
+	// !! 주의: Dex.xxx.get().name 은 ko-desc.js 패치로 인해 한글명을 반환하므로 사용 금지 !!
+	// 대신 BattleAliases(코리드 → 영어ID)와 englishName(ko-desc.js가 패치 전 저장)을 활용
+	function koToEnName(koName, battleTable) {
+		if (!koName || typeof koName !== 'string' || !KO_RE_EX.test(koName)) return koName;
+
+		// 1) BattleAliases 조회: ko-desc.js가 한글 koId → 영어 ID를 등록함
+		var koId = koName.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+		if (window.BattleAliases && window.BattleAliases[koId]) {
+			var engId = window.BattleAliases[koId];
+			// englishName: ko-desc.js가 name 패치 전 원본 영어명을 저장
+			if (battleTable && battleTable[engId] && battleTable[engId].englishName) {
+				return battleTable[engId].englishName;
+			}
+			// 다른 테이블에서도 탐색
+			var allTables = [window.BattlePokedex, window.BattleMovedex, window.BattleAbilities, window.BattleItems];
+			for (var b = 0; b < allTables.length; b++) {
+				if (allTables[b] && allTables[b][engId] && allTables[b][engId].englishName) {
+					return allTables[b][engId].englishName;
+				}
+			}
+			return engId; // 최후 수단: ID (PokePaste는 ID도 파싱 가능)
 		}
-		// Dex 조회 실패 시 id 반환 (pokepaste는 id도 파싱 가능)
-		return id;
+
+		// 2) 역인덱스에서 한글명 → ID 조회 후 englishName 탐색
+		var idx = buildReverseIndex();
+		var categories = ['pokemon', 'moves', 'abilities', 'items'];
+		var battleTables = [window.BattlePokedex, window.BattleMovedex, window.BattleAbilities, window.BattleItems];
+		for (var t = 0; t < categories.length; t++) {
+			var id = idx[categories[t]][koName];
+			if (id) {
+				// battleTable 우선, 없으면 전체 탐색
+				var bt = battleTable || battleTables[t];
+				if (bt && bt[id] && bt[id].englishName) return bt[id].englishName;
+				for (var b2 = 0; b2 < battleTables.length; b2++) {
+					if (battleTables[b2] && battleTables[b2][id] && battleTables[b2][id].englishName) {
+						return battleTables[b2][id].englishName;
+					}
+				}
+				return id; // englishName 없으면 ID 반환
+			}
+		}
+
+		return koName; // 변환 불가 시 원본 유지
 	}
 
 	function dekoreanizeSet(set) {
@@ -887,29 +915,30 @@ function patchWhenReady(patchFn) {
 
 		// 종족명
 		if (s.species && KO_RE_EX.test(s.species)) {
-			s.species = koToEnName(s.species, 'pokemon', Dex && Dex.species && Dex.species.get.bind(Dex.species));
+			s.species = koToEnName(s.species, window.BattlePokedex);
 		}
 
-		// 닉네임 (한글인 경우 종족명 역변환 시도)
+		// 닉네임: 한글이면 종족명으로 변환 시도, 여전히 한글이면 제거
 		if (s.name && KO_RE_EX.test(s.name)) {
-			s.name = koToEnName(s.name, 'pokemon', Dex && Dex.species && Dex.species.get.bind(Dex.species));
+			var converted = koToEnName(s.name, window.BattlePokedex);
+			s.name = KO_RE_EX.test(converted) ? '' : converted;
 		}
 
 		// 아이템
 		if (s.item && KO_RE_EX.test(s.item)) {
-			s.item = koToEnName(s.item, 'items', Dex && Dex.items && Dex.items.get.bind(Dex.items));
+			s.item = koToEnName(s.item, window.BattleItems);
 		}
 
 		// 특성
 		if (s.ability && KO_RE_EX.test(s.ability)) {
-			s.ability = koToEnName(s.ability, 'abilities', Dex && Dex.abilities && Dex.abilities.get.bind(Dex.abilities));
+			s.ability = koToEnName(s.ability, window.BattleAbilities);
 		}
 
 		// 기술 목록
 		if (s.moves && Array.isArray(s.moves)) {
 			s.moves = s.moves.map(function(move) {
 				if (!move || !KO_RE_EX.test(move)) return move;
-				return koToEnName(move, 'moves', Dex && Dex.moves && Dex.moves.get.bind(Dex.moves));
+				return koToEnName(move, window.BattleMovedex);
 			});
 		}
 
