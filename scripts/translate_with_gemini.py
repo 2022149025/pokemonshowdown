@@ -13,7 +13,10 @@ except ImportError:
     print("Please run: pip install google-generativeai")
     exit(1)
 
-api_key = "AIzaSyBpqkRWh2jvHXfV-_XNXgg6_QRz6bFnFGs"
+api_key = os.environ.get("GEMINI_API_KEY")
+if not api_key:
+    print("API KEY NOT FOUND: set the GEMINI_API_KEY environment variable")
+    exit(1)
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-2.5-flash')
 

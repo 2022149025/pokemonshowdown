@@ -3,13 +3,11 @@ import os
 import google.generativeai as genai
 import time
 
-# Ensure API key is set
-api_key = "AIzaSyBpqkRWh2jvHXfV-_XNXgg6_QRz6bFnFGs"
-
+# Read API key from environment (set GEMINI_API_KEY before running)
+api_key = os.environ.get("GEMINI_API_KEY")
 
 if not api_key:
-    # prompt the user or fail
-    print("API KEY NOT FOUND")
+    print("API KEY NOT FOUND: set the GEMINI_API_KEY environment variable")
     exit(1)
 
 genai.configure(api_key=api_key)

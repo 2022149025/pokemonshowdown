@@ -12,7 +12,10 @@ except ImportError:
     print("pip install google-generativeai")
     exit(1)
 
-API_KEY = "AIzaSyBpqkRWh2jvHXfV-_XNXgg6_QRz6bFnFGs"
+API_KEY = os.environ.get("GEMINI_API_KEY")
+if not API_KEY:
+    print("API KEY NOT FOUND: set the GEMINI_API_KEY environment variable")
+    exit(1)
 genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel('gemini-2.5-flash')
 CACHE_FILE = 'data/ko_translation_cache.json'
