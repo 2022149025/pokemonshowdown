@@ -866,6 +866,44 @@ function patchWhenReady(patchFn) {
 	// 한글명 → 영어 공식명 변환
 	// !! 주의: Dex.xxx.get().name 은 ko-desc.js 패치로 인해 한글명을 반환하므로 사용 금지 !!
 	// 대신 BattleAliases(코리드 → 영어ID)와 englishName(ko-desc.js가 패치 전 저장)을 활용
+	// ID → 정식 영어명 (englishName, _EnglishNameCache, Dex 조회 모두 시도)
+	function lookupEnglishName(engId, battleTable) {
+		if (!engId) return null;
+		// 1순위: 명시 battleTable의 englishName
+		if (battleTable && battleTable[engId] && battleTable[engId].englishName) {
+			return battleTable[engId].englishName;
+		}
+		// 2순위: _EnglishNameCache (ko-desc.js가 빌드)
+		if (window._EnglishNameCache && window._EnglishNameCache[engId]) {
+			return window._EnglishNameCache[engId];
+		}
+		// 3순위: 모든 BattleXxx 테이블의 englishName
+		var allTables = [window.BattlePokedex, window.BattleMovedex, window.BattleAbilities, window.BattleItems];
+		for (var b = 0; b < allTables.length; b++) {
+			if (allTables[b] && allTables[b][engId] && allTables[b][engId].englishName) {
+				return allTables[b][engId].englishName;
+			}
+		}
+		// 4순위: Dex.species/items/moves/abilities.get() 시도 → 반환 객체의 englishName 사용
+		try {
+			if (typeof Dex !== 'undefined') {
+				var getters = [
+					Dex.species && Dex.species.get,
+					Dex.items && Dex.items.get,
+					Dex.moves && Dex.moves.get,
+					Dex.abilities && Dex.abilities.get
+				];
+				var owners = [Dex.species, Dex.items, Dex.moves, Dex.abilities];
+				for (var g = 0; g < getters.length; g++) {
+					if (typeof getters[g] !== 'function') continue;
+					var obj = getters[g].call(owners[g], engId);
+					if (obj && obj.englishName) return obj.englishName;
+				}
+			}
+		} catch (e) {}
+		return null;
+	}
+
 	function koToEnName(koName, battleTable) {
 		if (!koName || typeof koName !== 'string' || !KO_RE_EX.test(koName)) return koName;
 
@@ -873,18 +911,9 @@ function patchWhenReady(patchFn) {
 		var koId = koName.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
 		if (window.BattleAliases && window.BattleAliases[koId]) {
 			var engId = window.BattleAliases[koId];
-			// englishName: ko-desc.js가 name 패치 전 원본 영어명을 저장
-			if (battleTable && battleTable[engId] && battleTable[engId].englishName) {
-				return battleTable[engId].englishName;
-			}
-			// 다른 테이블에서도 탐색
-			var allTables = [window.BattlePokedex, window.BattleMovedex, window.BattleAbilities, window.BattleItems];
-			for (var b = 0; b < allTables.length; b++) {
-				if (allTables[b] && allTables[b][engId] && allTables[b][engId].englishName) {
-					return allTables[b][engId].englishName;
-				}
-			}
-			return engId; // 최후 수단: ID (PokePaste는 ID도 파싱 가능)
+			var en = lookupEnglishName(engId, battleTable);
+			if (en) return en;
+			return engId; // 최후 수단: ID
 		}
 
 		// 2) 역인덱스에서 한글명 → ID 조회 후 englishName 탐색
@@ -894,17 +923,35 @@ function patchWhenReady(patchFn) {
 		for (var t = 0; t < categories.length; t++) {
 			var id = idx[categories[t]][koName];
 			if (id) {
-				// battleTable 우선, 없으면 전체 탐색
-				var bt = battleTable || battleTables[t];
-				if (bt && bt[id] && bt[id].englishName) return bt[id].englishName;
-				for (var b2 = 0; b2 < battleTables.length; b2++) {
-					if (battleTables[b2] && battleTables[b2][id] && battleTables[b2][id].englishName) {
-						return battleTables[b2][id].englishName;
-					}
-				}
+				var en2 = lookupEnglishName(id, battleTable || battleTables[t]);
+				if (en2) return en2;
 				return id; // englishName 없으면 ID 반환
 			}
 		}
+
+		// 3) _KoData 직접 조회 (BattlePokedex 손상 시 폴백)
+		try {
+			var kd = window._KoData;
+			if (kd) {
+				var koTables = [
+					{ data: kd.pokemon, bt: window.BattlePokedex },
+					{ data: kd.moves, bt: window.BattleMovedex },
+					{ data: kd.abilities, bt: window.BattleAbilities },
+					{ data: kd.items, bt: window.BattleItems }
+				];
+				for (var k = 0; k < koTables.length; k++) {
+					var tbl = koTables[k].data;
+					if (!tbl) continue;
+					for (var kid in tbl) {
+						if (tbl[kid] && tbl[kid].name === koName) {
+							var en3 = lookupEnglishName(kid, koTables[k].bt);
+							if (en3) return en3;
+							return kid;
+						}
+					}
+				}
+			}
+		} catch (e) {}
 
 		return koName; // 변환 불가 시 원본 유지
 	}
@@ -926,20 +973,8 @@ function patchWhenReady(patchFn) {
 			normalId = window.BattleAliases[normalId];
 		}
 
-		// 1순위: ko-desc.js가 만든 영어명 캐시 (_EnglishNameCache)
-		if (window._EnglishNameCache && window._EnglishNameCache[normalId]) {
-			return window._EnglishNameCache[normalId];
-		}
-
-		// 2순위: BattleXxx[id].englishName 조회
-		var allTables = battleTable
-			? [battleTable, window.BattlePokedex, window.BattleMovedex, window.BattleAbilities, window.BattleItems]
-			: [window.BattlePokedex, window.BattleMovedex, window.BattleAbilities, window.BattleItems];
-		for (var i = 0; i < allTables.length; i++) {
-			if (allTables[i] && allTables[i][normalId] && allTables[i][normalId].englishName) {
-				return allTables[i][normalId].englishName;
-			}
-		}
+		var en = lookupEnglishName(normalId, battleTable);
+		if (en) return en;
 		return id; // 못 찾으면 원본 ID 반환
 	}
 
@@ -1008,7 +1043,14 @@ function patchWhenReady(patchFn) {
 			if (Array.isArray(resolvedTeam)) {
 				// 역인덱스를 최신 상태로 리셋 (ko-desc.js가 나중에 로드될 수 있으므로)
 				_reverseIdx = null;
+				try {
+					console.log('[한글화/export] before:', resolvedTeam.map(function(s){return s && s.species;}));
+					console.log('[한글화/export] _EnglishNameCache size:', window._EnglishNameCache ? Object.keys(window._EnglishNameCache).length : 'undefined');
+				} catch(e) {}
 				resolvedTeam = resolvedTeam.map(dekoreanizeSet);
+				try {
+					console.log('[한글화/export] after:', resolvedTeam.map(function(s){return s && s.species;}));
+				} catch(e) {}
 			}
 			return _origExport.call(this, resolvedTeam, gen, hidestats);
 		};
