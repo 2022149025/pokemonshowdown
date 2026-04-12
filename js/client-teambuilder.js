@@ -1301,7 +1301,7 @@
 			}
 			buf += '<div class="setmenu"><button name="copySet"><i class="fa fa-files-o"></i>Copy</button> <button name="importSet"><i class="fa fa-upload"></i>Import/Export</button> <button name="moveSet"><i class="fa fa-arrows"></i>Move</button> <button name="deleteSet"><i class="fa fa-trash"></i>Delete</button></div>';
 			buf += '<div class="setchart-nickname">';
-			buf += '<label>Nickname</label><input type="text" name="nickname" class="textbox" value="' + BattleLog.escapeHTML(set.name || '') + '" placeholder="' + BattleLog.escapeHTML(species.name || species.baseSpecies) + '" />';
+			buf += '<label>Nickname</label><input type="text" name="nickname" class="textbox" value="' + BattleLog.escapeHTML(set.name || '') + '" placeholder="' + BattleLog.escapeHTML(species.koName || species.name || species.baseSpecies) + '" />';
 			buf += '</div>';
 			var _spriteSet = set;
 			if (set.species && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(set.species) && window.BattleAliases) {
@@ -1318,7 +1318,8 @@
 			} else {
 				buf += '<div class="setcell-sprite"></div>';
 			}
-			var _dispSpecies = (window.BattlePokedex && BattlePokedex[toID(set.species)] && BattlePokedex[toID(set.species)].name) || set.species;
+			var _pdx = window.BattlePokedex && BattlePokedex[toID(set.species)];
+			var _dispSpecies = (_pdx && (_pdx.koName || _pdx.name)) || set.species;
 			buf += '<div class="setcell setcell-pokemon"><label>Pok&eacute;mon</label><input type="text" name="pokemon" class="textbox chartinput" value="' + BattleLog.escapeHTML(_dispSpecies) + '" autocomplete="off" /></div></div>';
 
 			// details
@@ -1381,15 +1382,17 @@
 			buf += '</div></div>';
 
 			buf += '<div class="setrow">';
-			var _dispItem = (window.BattleItems && BattleItems[toID(set.item)] && BattleItems[toID(set.item)].name) || set.item;
-			var _dispAbility = (window.BattleAbilities && BattleAbilities[toID(set.ability)] && BattleAbilities[toID(set.ability)].name) || set.ability;
+			var _itm = window.BattleItems && BattleItems[toID(set.item)];
+			var _dispItem = (_itm && (_itm.koName || _itm.name)) || set.item;
+			var _abl = window.BattleAbilities && BattleAbilities[toID(set.ability)];
+			var _dispAbility = (_abl && (_abl.koName || _abl.name)) || set.ability;
 			if (this.curTeam.gen > 1 && !isLetsGo) buf += '<div class="setcell setcell-item"><label>Item</label><input type="text" name="item" class="textbox chartinput" value="' + BattleLog.escapeHTML(_dispItem) + '" autocomplete="off" /></div>';
 			if (this.curTeam.gen > 2 && !isLetsGo) buf += '<div class="setcell setcell-ability"><label>Ability</label><input type="text" name="ability" class="textbox chartinput" value="' + BattleLog.escapeHTML(_dispAbility) + '" autocomplete="off" /></div>';
 			buf += '</div></div>';
 
 			// moves
 			if (!set.moves) set.moves = [];
-			var _dm = function(m) { return (m && window.BattleMovedex && BattleMovedex[toID(m)] && BattleMovedex[toID(m)].name) || m || ''; };
+			var _dm = function(m) { var _mv = m && window.BattleMovedex && BattleMovedex[toID(m)]; return (_mv && (_mv.koName || _mv.name)) || m || ''; };
 			buf += '<div class="setcol setcol-moves"><div class="setcell"><label>Moves</label>';
 			buf += '<input type="text" name="move1" class="textbox chartinput" value="' + BattleLog.escapeHTML(_dm(set.moves[0])) + '" autocomplete="off" /></div>';
 			buf += '<div class="setcell"><input type="text" name="move2" class="textbox chartinput" value="' + BattleLog.escapeHTML(_dm(set.moves[1])) + '" autocomplete="off" /></div>';
@@ -2035,9 +2038,11 @@
 					buf += '<button disabled class="addpokemon" aria-label="Add Pok&eacute;mon"><i class="fa fa-plus"></i></button> ';
 					isAdd = true;
 				} else if (i === this.curSetLoc) {
-					buf += '<button disabled class="pokemon">' + pokemonicon + BattleLog.escapeHTML(set.name || this.curTeam.dex.species.get(set.species).baseSpecies || '<i class="fa fa-plus"></i>') + '</button> ';
+					var _sp2038 = this.curTeam.dex.species.get(set.species);
+					buf += '<button disabled class="pokemon">' + pokemonicon + BattleLog.escapeHTML(set.name || _sp2038.koName || _sp2038.baseSpecies || '<i class="fa fa-plus"></i>') + '</button> ';
 				} else {
-					buf += '<button name="selectPokemon" value="' + i + '" class="pokemon">' + pokemonicon + BattleLog.escapeHTML(set.name || this.curTeam.dex.species.get(set.species).baseSpecies) + '</button> ';
+					var _sp2040 = this.curTeam.dex.species.get(set.species);
+					buf += '<button name="selectPokemon" value="' + i + '" class="pokemon">' + pokemonicon + BattleLog.escapeHTML(set.name || _sp2040.koName || _sp2040.baseSpecies) + '</button> ';
 				}
 			}
 			if (this.curSetList.length < this.curTeam.capacity && !isAdd) {
@@ -2163,13 +2168,22 @@
 			var q = $inputEl.val();
 
 			if (pokemonChanged || this.search.qName !== this.curChartName) {
+				// 한글 입력값을 영어 ID로 변환하는 헬퍼
+				var _koToId = function(v) {
+					var _id = toID(v);
+					if (/[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(v) && window.BattleAliases) {
+						var _kk = v.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+						if (window.BattleAliases[_kk]) return window.BattleAliases[_kk];
+					}
+					return _id;
+				};
 				var cur = {};
-				cur[toID(q)] = 1; // make sure selected one is first
+				cur[_koToId(q)] = 1; // make sure selected one is first
 				if (type === 'move') {
-					cur[toID(this.$('input[name=move1]').val())] = 1;
-					cur[toID(this.$('input[name=move2]').val())] = 1;
-					cur[toID(this.$('input[name=move3]').val())] = 1;
-					cur[toID(this.$('input[name=move4]').val())] = 1;
+					cur[_koToId(this.$('input[name=move1]').val())] = 1;
+					cur[_koToId(this.$('input[name=move2]').val())] = 1;
+					cur[_koToId(this.$('input[name=move3]').val())] = 1;
+					cur[_koToId(this.$('input[name=move4]').val())] = 1;
 				}
 				if (type !== this.search.qType) {
 					this.$chart.scrollTop(0);
@@ -3111,10 +3125,11 @@
 					}
 				}
 				if (moves.length < this.curSet.moves.length) {
-					this.$('input[name=move1]').val(moves[0] || '');
-					this.$('input[name=move2]').val(moves[1] || '');
-					this.$('input[name=move3]').val(moves[2] || '');
-					this.$('input[name=move4]').val(moves[3] || '');
+					var _dMv = function(m) { var mv = m && window.BattleMovedex && BattleMovedex[toID(m)]; return (mv && mv.koName) || m || ''; };
+					this.$('input[name=move1]').val(_dMv(moves[0]));
+					this.$('input[name=move2]').val(_dMv(moves[1]));
+					this.$('input[name=move3]').val(_dMv(moves[2]));
+					this.$('input[name=move4]').val(_dMv(moves[3]));
 					this.$('input[name=move' + Math.min(moves.length + 1, 4) + ']').focus();
 					this.curSet.moves = moves;
 					this.search.find('');
@@ -3219,12 +3234,11 @@
 			var name = e.currentTarget.name;
 			if (this.curChartName !== name) return;
 			var id = toID(e.currentTarget.value);
-			if (!id && window.BattleAliases) {
-				var _rawKo = e.currentTarget.value;
-				if (/[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(_rawKo)) {
-					var _koKey = _rawKo.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
-					if (window.BattleAliases[_koKey]) id = window.BattleAliases[_koKey];
-				}
+			// 한글 입력값이면 toID 결과와 관계없이 BattleAliases에서 영어 ID 조회
+			var _rawKo = e.currentTarget.value;
+			if (/[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(_rawKo) && window.BattleAliases) {
+				var _koKey = _rawKo.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+				if (window.BattleAliases[_koKey]) id = window.BattleAliases[_koKey];
 			}
 			if (id in BattleAliases) id = toID(BattleAliases[id]);
 			var val = '';
@@ -3367,7 +3381,7 @@
 			var inputName = this.curChartName;
 			var input = this.$('input[name=' + inputName + ']');
 			if (this.chartSetCustom(input.val())) return;
-			// 한글명이면 BattleAliases로 영어 ID를 찾고, englishName으로 정확한 영어명 복원
+			// 한글명이면 BattleAliases로 영어 ID를 찾고, .name(영어)으로 복원
 			var storedVal = val;
 			if (val && /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/.test(val) && window.BattleAliases) {
 				var _csKoKey = val.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
@@ -3377,10 +3391,20 @@
 					             (inputName === 'item')    ? window.BattleItems :
 					             (inputName === 'ability') ? window.BattleAbilities :
 					                                        window.BattleMovedex;
-					storedVal = (_csTbl && _csTbl[_csKoId] && _csTbl[_csKoId].englishName) || _csKoId;
+					storedVal = (_csTbl && _csTbl[_csKoId] && _csTbl[_csKoId].name) || _csKoId;
 				}
 			}
-			input.val(val).removeClass('incomplete');
+			// 한글명이 있으면 입력란에 한글명 표시 (내부 저장은 storedVal=영어)
+			var _dispVal = val;
+			if (storedVal) {
+				var _csTbl2 = (inputName === 'pokemon') ? window.BattlePokedex :
+				              (inputName === 'item')    ? window.BattleItems :
+				              (inputName === 'ability') ? window.BattleAbilities :
+				                                          window.BattleMovedex;
+				var _csEntry = _csTbl2 && _csTbl2[toID(storedVal)];
+				if (_csEntry && _csEntry.koName) _dispVal = _csEntry.koName;
+			}
+			input.val(_dispVal).removeClass('incomplete');
 			switch (inputName) {
 			case 'pokemon':
 				this.setPokemon(storedVal, selectNext);

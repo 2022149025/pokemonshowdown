@@ -12,7 +12,7 @@
         "name": "이상해꽃"
     },
     "venusaurmega": {
-        "name": "메가 이상해꽃"
+        "name": "메가이상해꽃"
     },
     "venusaurgmax": {
         "name": "이상해꽃(거다이맥스)"
@@ -27,10 +27,10 @@
         "name": "리자몽"
     },
     "charizardmegax": {
-        "name": "메가 리자몽 X"
+        "name": "메가리자몽 X"
     },
     "charizardmegay": {
-        "name": "메가 리자몽 Y"
+        "name": "메가리자몽 Y"
     },
     "charizardgmax": {
         "name": "리자몽(거다이맥스)"
@@ -45,7 +45,7 @@
         "name": "거북왕"
     },
     "blastoisemega": {
-        "name": "메가 거북왕"
+        "name": "메가거북왕"
     },
     "blastoisegmax": {
         "name": "거북왕(거다이맥스)"
@@ -72,7 +72,7 @@
         "name": "독침붕"
     },
     "beedrillmega": {
-        "name": "메가 독침붕"
+        "name": "메가독침붕"
     },
     "pidgey": {
         "name": "구구"
@@ -84,7 +84,7 @@
         "name": "피죤투"
     },
     "pidgeotmega": {
-        "name": "메가 피죤투"
+        "name": "메가피죤투"
     },
     "rattata": {
         "name": "꼬렛"
@@ -171,10 +171,10 @@
         "name": "라이츄(알로라의 모습)"
     },
     "raichumegax": {
-        "name": "메가 라이츄 X"
+        "name": "메가라이츄 X"
     },
     "raichumegay": {
-        "name": "메가 라이츄 Y"
+        "name": "메가라이츄 Y"
     },
     "sandshrew": {
         "name": "모래두지"
@@ -213,7 +213,7 @@
         "name": "픽시"
     },
     "clefablemega": {
-        "name": "메가 픽시"
+        "name": "메가픽시"
     },
     "vulpix": {
         "name": "식스테일"
@@ -333,7 +333,7 @@
         "name": "후딘"
     },
     "alakazammega": {
-        "name": "메가 후딘"
+        "name": "메가후딘"
     },
     "machop": {
         "name": "알통몬"
@@ -357,7 +357,7 @@
         "name": "우츠보트"
     },
     "victreebelmega": {
-        "name": "메가 우츠보트"
+        "name": "메가우츠보트"
     },
     "tentacool": {
         "name": "왕눈해"
@@ -405,7 +405,7 @@
         "name": "야도란"
     },
     "slowbromega": {
-        "name": "메가 야도란"
+        "name": "메가야도란"
     },
     "slowbrogalar": {
         "name": "야도란(가라르의 모습)"
@@ -462,7 +462,7 @@
         "name": "팬텀"
     },
     "gengarmega": {
-        "name": "메가 팬텀"
+        "name": "메가팬텀"
     },
     "gengargmax": {
         "name": "팬텀(거다이맥스)"
@@ -552,7 +552,7 @@
         "name": "캥카"
     },
     "kangaskhanmega": {
-        "name": "메가 캥카"
+        "name": "메가캥카"
     },
     "horsea": {
         "name": "쏘드라"
@@ -573,7 +573,7 @@
         "name": "아쿠스타"
     },
     "starmiemega": {
-        "name": "메가 아쿠스타"
+        "name": "메가아쿠스타"
     },
     "mrmime": {
         "name": "마임맨"
@@ -597,7 +597,7 @@
         "name": "쁘사이저"
     },
     "pinsirmega": {
-        "name": "메가 쁘사이저"
+        "name": "메가쁘사이저"
     },
     "tauros": {
         "name": "켄타로스"
@@ -618,7 +618,7 @@
         "name": "갸라도스"
     },
     "gyaradosmega": {
-        "name": "메가 갸라도스"
+        "name": "메가갸라도스"
     },
     "lapras": {
         "name": "라프라스"
@@ -666,7 +666,7 @@
         "name": "프테라"
     },
     "aerodactylmega": {
-        "name": "메가 프테라"
+        "name": "메가프테라"
     },
     "snorlax": {
         "name": "잠만보"
@@ -702,16 +702,16 @@
         "name": "망나뇽"
     },
     "dragonitemega": {
-        "name": "메가 망나뇽"
+        "name": "메가망나뇽"
     },
     "mewtwo": {
         "name": "뮤츠"
     },
     "mewtwomegax": {
-        "name": "메가 뮤츠 X"
+        "name": "메가뮤츠 X"
     },
     "mewtwomegay": {
-        "name": "메가 뮤츠 Y"
+        "name": "메가뮤츠 Y"
     },
     "mew": {
         "name": "뮤"
@@ -726,7 +726,7 @@
         "name": "메가니움"
     },
     "meganiummega": {
-        "name": "메가 메가니움"
+        "name": "메가메가니움"
     },
     "cyndaquil": {
         "name": "브케인"
@@ -750,7 +750,7 @@
         "name": "장크로다일"
     },
     "feraligatrmega": {
-        "name": "메가 장크로다일"
+        "name": "메가장크로다일"
     },
     "sentret": {
         "name": "꼬리선"
@@ -819,7 +819,7 @@
         "name": "전룡"
     },
     "ampharosmega": {
-        "name": "메가 전룡"
+        "name": "메가전룡"
     },
     "bellossom": {
         "name": "아르코"
@@ -909,7 +909,7 @@
         "name": "강철톤"
     },
     "steelixmega": {
-        "name": "메가 강철톤"
+        "name": "메가강철톤"
     },
     "snubbull": {
         "name": "블루"
@@ -927,7 +927,7 @@
         "name": "핫삼"
     },
     "scizormega": {
-        "name": "메가 핫삼"
+        "name": "메가핫삼"
     },
     "shuckle": {
         "name": "단단지"
@@ -936,7 +936,7 @@
         "name": "헤라크로스"
     },
     "heracrossmega": {
-        "name": "메가 헤라크로스"
+        "name": "메가헤라크로스"
     },
     "sneasel": {
         "name": "포푸니"
@@ -984,7 +984,7 @@
         "name": "무장조"
     },
     "skarmorymega": {
-        "name": "메가 무장조"
+        "name": "메가무장조"
     },
     "houndour": {
         "name": "델빌"
@@ -993,7 +993,7 @@
         "name": "헬가"
     },
     "houndoommega": {
-        "name": "메가 헬가"
+        "name": "메가헬가"
     },
     "kingdra": {
         "name": "킹드라"
@@ -1053,7 +1053,7 @@
         "name": "마기라스"
     },
     "tyranitarmega": {
-        "name": "메가 마기라스"
+        "name": "메가마기라스"
     },
     "lugia": {
         "name": "루기아"
@@ -1074,7 +1074,7 @@
         "name": "나무킹"
     },
     "sceptilemega": {
-        "name": "메가 나무킹"
+        "name": "메가나무킹"
     },
     "torchic": {
         "name": "아차모"
@@ -1086,7 +1086,7 @@
         "name": "번치코"
     },
     "blazikenmega": {
-        "name": "메가 번치코"
+        "name": "메가번치코"
     },
     "mudkip": {
         "name": "물짱이"
@@ -1098,7 +1098,7 @@
         "name": "대짱이"
     },
     "swampertmega": {
-        "name": "메가 대짱이"
+        "name": "메가대짱이"
     },
     "poochyena": {
         "name": "포챠나"
@@ -1173,7 +1173,7 @@
         "name": "가디안"
     },
     "gardevoirmega": {
-        "name": "메가 가디안"
+        "name": "메가가디안"
     },
     "surskit": {
         "name": "비구술"
@@ -1236,13 +1236,13 @@
         "name": "깜까미"
     },
     "sableyemega": {
-        "name": "메가 깜까미"
+        "name": "메가깜까미"
     },
     "mawile": {
         "name": "입치트"
     },
     "mawilemega": {
-        "name": "메가 입치트"
+        "name": "메가입치트"
     },
     "aron": {
         "name": "가보리"
@@ -1254,7 +1254,7 @@
         "name": "보스로라"
     },
     "aggronmega": {
-        "name": "메가 보스로라"
+        "name": "메가보스로라"
     },
     "meditite": {
         "name": "요가랑"
@@ -1263,7 +1263,7 @@
         "name": "요가램"
     },
     "medichammega": {
-        "name": "메가 요가램"
+        "name": "메가요가램"
     },
     "electrike": {
         "name": "썬더라이"
@@ -1272,7 +1272,7 @@
         "name": "썬더볼트"
     },
     "manectricmega": {
-        "name": "메가 썬더볼트"
+        "name": "메가썬더볼트"
     },
     "plusle": {
         "name": "플러시"
@@ -1302,7 +1302,7 @@
         "name": "샤크니아"
     },
     "sharpedomega": {
-        "name": "메가 샤크니아"
+        "name": "메가샤크니아"
     },
     "wailmer": {
         "name": "고래왕자"
@@ -1317,7 +1317,7 @@
         "name": "폭타"
     },
     "cameruptmega": {
-        "name": "메가 폭타"
+        "name": "메가폭타"
     },
     "torkoal": {
         "name": "코터스"
@@ -1353,7 +1353,7 @@
         "name": "파비코리"
     },
     "altariamega": {
-        "name": "메가 파비코리"
+        "name": "메가파비코리"
     },
     "zangoose": {
         "name": "쟝고"
@@ -1425,7 +1425,7 @@
         "name": "다크펫"
     },
     "banettemega": {
-        "name": "메가 다크펫"
+        "name": "메가다크펫"
     },
     "duskull": {
         "name": "해골몽"
@@ -1440,16 +1440,16 @@
         "name": "치렁"
     },
     "chimechomega": {
-        "name": "메가 치렁"
+        "name": "메가치렁"
     },
     "absol": {
         "name": "앱솔"
     },
     "absolmega": {
-        "name": "메가 앱솔"
+        "name": "메가앱솔"
     },
     "absolmegaz": {
-        "name": "메가 앱솔"
+        "name": "메가앱솔"
     },
     "wynaut": {
         "name": "마자"
@@ -1461,7 +1461,7 @@
         "name": "얼음귀신"
     },
     "glaliemega": {
-        "name": "메가 얼음귀신"
+        "name": "메가얼음귀신"
     },
     "spheal": {
         "name": "대굴레오"
@@ -1497,7 +1497,7 @@
         "name": "보만다"
     },
     "salamencemega": {
-        "name": "메가 보만다"
+        "name": "메가보만다"
     },
     "beldum": {
         "name": "메탕"
@@ -1509,7 +1509,7 @@
         "name": "메타그로스"
     },
     "metagrossmega": {
-        "name": "메가 메타그로스"
+        "name": "메가메타그로스"
     },
     "regirock": {
         "name": "레지락"
@@ -1524,13 +1524,13 @@
         "name": "라티아스"
     },
     "latiasmega": {
-        "name": "메가 라티아스"
+        "name": "메가라티아스"
     },
     "latios": {
         "name": "라티오스"
     },
     "latiosmega": {
-        "name": "메가 라티오스"
+        "name": "메가라티오스"
     },
     "kyogre": {
         "name": "가이오가"
@@ -1548,7 +1548,7 @@
         "name": "레쿠쟈"
     },
     "rayquazamega": {
-        "name": "메가 레쿠쟈"
+        "name": "메가레쿠쟈"
     },
     "jirachi": {
         "name": "지라치"
@@ -1602,7 +1602,7 @@
         "name": "찌르호크"
     },
     "staraptormega": {
-        "name": "메가 찌르호크"
+        "name": "메가찌르호크"
     },
     "bidoof": {
         "name": "비버니"
@@ -1716,7 +1716,7 @@
         "name": "이어롭"
     },
     "lopunnymega": {
-        "name": "메가 이어롭"
+        "name": "메가이어롭"
     },
     "mismagius": {
         "name": "무우마직"
@@ -1770,10 +1770,10 @@
         "name": "한카리아스"
     },
     "garchompmega": {
-        "name": "메가 한카리아스"
+        "name": "메가한카리아스"
     },
     "garchompmegaz": {
-        "name": "메가 한카리아스"
+        "name": "메가한카리아스"
     },
     "munchlax": {
         "name": "먹고자"
@@ -1785,10 +1785,10 @@
         "name": "루카리오"
     },
     "lucariomega": {
-        "name": "메가 루카리오"
+        "name": "메가루카리오"
     },
     "lucariomegaz": {
-        "name": "메가 루카리오"
+        "name": "메가루카리오"
     },
     "hippopotas": {
         "name": "히포포타스"
@@ -1827,7 +1827,7 @@
         "name": "눈설왕"
     },
     "abomasnowmega": {
-        "name": "메가 눈설왕"
+        "name": "메가눈설왕"
     },
     "weavile": {
         "name": "포푸니라"
@@ -1875,7 +1875,7 @@
         "name": "엘레이드"
     },
     "gallademega": {
-        "name": "메가 엘레이드"
+        "name": "메가엘레이드"
     },
     "probopass": {
         "name": "대코파스"
@@ -1887,7 +1887,7 @@
         "name": "눈여아"
     },
     "froslassmega": {
-        "name": "메가 눈여아"
+        "name": "메가눈여아"
     },
     "rotom": {
         "name": "로토무"
@@ -1932,7 +1932,7 @@
         "name": "히드런"
     },
     "heatranmega": {
-        "name": "메가 히드런"
+        "name": "메가히드런"
     },
     "regigigas": {
         "name": "레지기가스"
@@ -1956,7 +1956,7 @@
         "name": "다크라이"
     },
     "darkraimega": {
-        "name": "메가 다크라이"
+        "name": "메가다크라이"
     },
     "shaymin": {
         "name": "쉐이미"
@@ -2040,7 +2040,7 @@
         "name": "염무왕"
     },
     "emboarmega": {
-        "name": "메가 염무왕"
+        "name": "메가염무왕"
     },
     "oshawott": {
         "name": "수댕이"
@@ -2136,13 +2136,13 @@
         "name": "몰드류"
     },
     "excadrillmega": {
-        "name": "메가 몰드류"
+        "name": "메가몰드류"
     },
     "audino": {
         "name": "다부니"
     },
     "audinomega": {
-        "name": "메가 다부니"
+        "name": "메가다부니"
     },
     "timburr": {
         "name": "으랏차"
@@ -2187,7 +2187,7 @@
         "name": "펜드라"
     },
     "scolipedemega": {
-        "name": "메가 펜드라"
+        "name": "메가펜드라"
     },
     "cottonee": {
         "name": "소미안"
@@ -2256,7 +2256,7 @@
         "name": "곤율거니"
     },
     "scraftymega": {
-        "name": "메가 곤율거니"
+        "name": "메가곤율거니"
     },
     "sigilyph": {
         "name": "심보러"
@@ -2412,7 +2412,7 @@
         "name": "저리더프"
     },
     "eelektrossmega": {
-        "name": "메가 저리더프"
+        "name": "메가저리더프"
     },
     "elgyem": {
         "name": "리그레"
@@ -2430,7 +2430,7 @@
         "name": "샹델라"
     },
     "chandeluremega": {
-        "name": "메가 샹델라"
+        "name": "메가샹델라"
     },
     "axew": {
         "name": "터검니"
@@ -2478,7 +2478,7 @@
         "name": "골루그"
     },
     "golurkmega": {
-        "name": "메가 골루그"
+        "name": "메가골루그"
     },
     "pawniard": {
         "name": "자망칼"
@@ -2604,7 +2604,7 @@
         "name": "브리가론"
     },
     "chesnaughtmega": {
-        "name": "메가 브리가론"
+        "name": "메가브리가론"
     },
     "fennekin": {
         "name": "푸호꼬"
@@ -2616,7 +2616,7 @@
         "name": "마폭시"
     },
     "delphoxmega": {
-        "name": "메가 마폭시"
+        "name": "메가마폭시"
     },
     "froakie": {
         "name": "개구마르"
@@ -2634,7 +2634,7 @@
         "name": "개굴닌자(지우의 모습)"
     },
     "greninjamega": {
-        "name": "메가 개굴닌자"
+        "name": "메가개굴닌자"
     },
     "bunnelby": {
         "name": "파르빗"
@@ -2724,7 +2724,7 @@
         "name": "화염레오"
     },
     "pyroarmega": {
-        "name": "메가 화염레오"
+        "name": "메가화염레오"
     },
     "flabebe": {
         "name": "플라베베"
@@ -2736,7 +2736,7 @@
         "name": "플라엣테 영원의꽃"
     },
     "floettemega": {
-        "name": "메가 플라엣테"
+        "name": "메가플라엣테"
     },
     "florges": {
         "name": "플라제스"
@@ -2766,7 +2766,7 @@
         "name": "냐오닉 (암컷)"
     },
     "meowsticmmega": {
-        "name": "메가 수컷 나옹마"
+        "name": "메가수컷 나옹마"
     },
     "meowsticfmega": {
         "name": "메가냐오닉스(암컷)"
@@ -2802,7 +2802,7 @@
         "name": "칼라마네로"
     },
     "malamarmega": {
-        "name": "메가 칼라마네로"
+        "name": "메가칼라마네로"
     },
     "binacle": {
         "name": "거북손손"
@@ -2811,7 +2811,7 @@
         "name": "거북손데스"
     },
     "barbaraclemega": {
-        "name": "메가 거북손데스"
+        "name": "메가거북손데스"
     },
     "skrelp": {
         "name": "수레기"
@@ -2820,7 +2820,7 @@
         "name": "드래캄"
     },
     "dragalgemega": {
-        "name": "메가 드래캄"
+        "name": "메가드래캄"
     },
     "clauncher": {
         "name": "완철포"
@@ -2853,7 +2853,7 @@
         "name": "루차불"
     },
     "hawluchamega": {
-        "name": "메가 루차불"
+        "name": "메가루차불"
     },
     "dedenne": {
         "name": "데덴네"
@@ -2943,13 +2943,13 @@
         "name": "지가르데(퍼펙트폼)"
     },
     "zygardemega": {
-        "name": "메가 지가르데"
+        "name": "메가지가르데"
     },
     "diancie": {
         "name": "디안시"
     },
     "dianciemega": {
-        "name": "메가 디안시"
+        "name": "메가디안시"
     },
     "hoopa": {
         "name": "후파"
@@ -3027,7 +3027,7 @@
         "name": "모단단게"
     },
     "crabominablemega": {
-        "name": "메가 모단단게"
+        "name": "메가모단단게"
     },
     "oricorio": {
         "name": "춤추새"
@@ -3147,7 +3147,7 @@
         "name": "갑주무사"
     },
     "golisopodmega": {
-        "name": "메가 갑주무사"
+        "name": "메가갑주무사"
     },
     "sandygast": {
         "name": "모래꿍"
@@ -3270,7 +3270,7 @@
         "name": "할비롱"
     },
     "drampamega": {
-        "name": "메가 할비롱"
+        "name": "메가할비롱"
     },
     "dhelmise": {
         "name": "타타륜"
@@ -3351,7 +3351,7 @@
         "name": "마기아나 (오리지널컬러)"
     },
     "magearnamega": {
-        "name": "메가 마기아나"
+        "name": "메가마기아나"
     },
     "magearnaoriginalmega": {
         "name": "마기아나(오리지널)(메가)"
@@ -3375,7 +3375,7 @@
         "name": "제라오라"
     },
     "zeraoramega": {
-        "name": "메가 제라오라"
+        "name": "메가제라오라"
     },
     "meltan": {
         "name": "멜탄"
@@ -3654,7 +3654,7 @@
         "name": "대여르"
     },
     "falinksmega": {
-        "name": "메가 대여르"
+        "name": "메가대여르"
     },
     "pincurchin": {
         "name": "찌르성게"
@@ -3969,7 +3969,7 @@
         "name": "스코빌런"
     },
     "scovillainmega": {
-        "name": "메가 스코빌런"
+        "name": "메가스코빌런"
     },
     "rellor": {
         "name": "구르데"
@@ -4029,7 +4029,7 @@
         "name": "킬라플로르"
     },
     "glimmoramega": {
-        "name": "메가 킬라플로르"
+        "name": "메가킬라플로르"
     },
     "greavard": {
         "name": "망망이"
@@ -4134,7 +4134,7 @@
         "name": "드닐레이브"
     },
     "baxcaliburmega": {
-        "name": "메가 드닐레이브"
+        "name": "메가드닐레이브"
     },
     "gimmighoul": {
         "name": "모으령"
@@ -13738,34 +13738,27 @@
     }
 };
 
+    // ===== 신규 아키텍처: .name은 영어 유지, .koName에 한글 저장 =====
+    // .name을 덮어쓰지 않으므로 toID(species.name)이 항상 정상 작동
+    // 역변환(resolveKo, koToEnName 등) 완전 불필요
     function applyDescs() {
         var toIdLocal = function(text) {
             return ('' + (text || '')).toLowerCase().replace(/[^a-z0-9]+/g, '');
         };
 
-        // 포켓몬: 이름 변경 전 영어 spriteid 보존 + BattleAliases에 한글명 등록
         var applyPokedex = function(target, source) {
             if (!target) return;
             if (typeof window.BattleAliases === 'undefined') window.BattleAliases = {};
             for (var id in source) {
                 if (!target[id] || !source[id].name) continue;
-                if (!target[id].spriteid) {
-                    var baseId = toIdLocal(target[id].baseSpecies || id);
-                    var forme  = toIdLocal(target[id].forme || '');
-                    target[id].spriteid = forme ? baseId + '-' + forme : (baseId || id);
-                }
-                if (!target[id].baseSpecies) {
-                    target[id].baseSpecies = target[id].name || id;
-                }
-                // 영어 원본 이름 보존 (한글 변경 전)
-                if (!target[id].englishName) {
-                    target[id].englishName = target[id].name;
-                }
+                // 한글명을 koName 필드에 저장 (.name은 영어 유지)
+                target[id].koName = source[id].name;
+                // BattleAliases에 한글→영어ID 매핑 등록 (검색용)
                 var koId = source[id].name.toLowerCase().replace(/[^a-z0-9가-힣ㄱ-ㆎㅏ-ㅣ]+/g, '');
                 if (koId && !window.BattleAliases[koId]) {
                     window.BattleAliases[koId] = id;
                 }
-                target[id].name = source[id].name;
+                // 설명은 표시 전용이므로 직접 덮어씀
                 if (source[id].shortDesc) target[id].shortDesc = source[id].shortDesc;
                 if (source[id].desc) target[id].desc = source[id].desc;
             }
@@ -13777,15 +13770,11 @@
             for (var id in source) {
                 if (target[id]) {
                     if (source[id].name) {
+                        target[id].koName = source[id].name;
                         var koId = source[id].name.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
                         if (koId && !window.BattleAliases[koId]) {
                             window.BattleAliases[koId] = id;
                         }
-                        // 영어 원본 이름 보존 (한글 변경 전)
-                        if (!target[id].englishName) {
-                            target[id].englishName = target[id].name;
-                        }
-                        target[id].name = source[id].name;
                     }
                     if (source[id].shortDesc) target[id].shortDesc = source[id].shortDesc;
                     if (source[id].desc) target[id].desc = source[id].desc;
@@ -13799,32 +13788,9 @@
         applyOther(window.BattleAbilities, koAbilities);
     }
 
-    // applyDescs 래퍼: 실행 후 영어명 캐시를 업데이트
-    function applyDescsAndCache() {
-        applyDescs();
-        // ID → 정식 영어명 맵 생성 (englishName로 저장된 값)
-        if (!window._EnglishNameCache) window._EnglishNameCache = {};
-        var cache = window._EnglishNameCache;
-        var tables = [
-            { data: window.BattlePokedex },
-            { data: window.BattleMovedex },
-            { data: window.BattleItems },
-            { data: window.BattleAbilities }
-        ];
-        for (var t = 0; t < tables.length; t++) {
-            var tbl = tables[t].data;
-            if (!tbl) continue;
-            for (var id in tbl) {
-                if (tbl[id] && tbl[id].englishName && !cache[id]) {
-                    cache[id] = tbl[id].englishName;
-                }
-            }
-        }
-    }
-
-    applyDescsAndCache();
-    window.addEventListener('load', applyDescsAndCache);
-    setTimeout(applyDescsAndCache, 3000);
+    applyDescs();
+    window.addEventListener('load', applyDescs);
+    setTimeout(applyDescs, 3000);
 
     // 한국어 검색을 위해 ko 데이터 전역 노출
     window._KoData = { pokemon: koPokedex, moves: koMoves, items: koItems, abilities: koAbilities };
@@ -13917,23 +13883,17 @@
             var proto = BattleTextParser.prototype;
 
             // effect() 패치: 기술/아이템/특성명 한국어 변환
+            // .name은 영어 유지되므로 koName 또는 내부 koData 조회
             if (!proto.effect._koPatch) {
                 var _origEffect = proto.effect;
                 proto.effect = function(eff) {
                     var result = _origEffect.call(this, eff);
                     if (!eff) return result;
                     try {
-                        var prefix = eff.startsWith('move:') ? 'move' :
-                                     eff.startsWith('item:') ? 'item' :
-                                     eff.startsWith('ability:') ? 'ability' : '';
                         var id = _toID(result);
                         if (!id) return result;
-                        if ((prefix === 'move' || !prefix) && window.BattleMovedex && window.BattleMovedex[id] && window.BattleMovedex[id].name)
-                            return window.BattleMovedex[id].name;
-                        if ((prefix === 'item' || !prefix) && window.BattleItems && window.BattleItems[id] && window.BattleItems[id].name)
-                            return window.BattleItems[id].name;
-                        if ((prefix === 'ability' || !prefix) && window.BattleAbilities && window.BattleAbilities[id] && window.BattleAbilities[id].name)
-                            return window.BattleAbilities[id].name;
+                        // ko-desc 내부 데이터 직접 조회 (가장 안정적)
+                        return koLookup(result);
                     } catch(e) {}
                     return result;
                 };
@@ -13944,11 +13904,12 @@
             if (!proto.parseArgs._koPatch) {
                 var _origParseArgs = proto.parseArgs;
                 proto.parseArgs = function(args, kwArgs, noSectionBreak) {
-                    if (args[0] === 'move' && args[2] && window.BattleMovedex) {
+                    if (args[0] === 'move' && args[2]) {
                         try {
                             var id = _toID(args[2]);
-                            var mv = window.BattleMovedex[id];
-                            if (mv && mv.name) { args = args.slice(0); args[2] = mv.name; }
+                            // koMoves 직접 조회 (.name은 영어 유지이므로)
+                            var koMv = koMoves[id];
+                            if (koMv && koMv.name) { args = args.slice(0); args[2] = koMv.name; }
                         } catch(e) {}
                     }
                     var result = _origParseArgs.call(this, args, kwArgs, noSectionBreak);
