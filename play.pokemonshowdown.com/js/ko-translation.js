@@ -733,6 +733,67 @@ function patchWhenReady(patchFn) {
 	});
 })();
 
+// Dex.species.get / Dex.items.get / Dex.moves.get / Dex.abilities.get 패치
+// 문제: toID("메가 리자몽 Y") = "y" → 한글이 제거되어 완전히 다른 ID가 됨
+// 해결: get() 호출 시 한글이 포함되면 _KoData/BattleAliases에서 영어 ID로 변환 후 원본 get() 호출
+(function() {
+	var KO_RE = /[\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]/;
+
+	function resolveKoName(name, koTable, battleTable) {
+		if (!name || typeof name !== 'string' || !KO_RE.test(name)) return name;
+		// 1) _KoData에서 한글명 → ID
+		if (koTable) {
+			for (var id in koTable) {
+				if (koTable[id] && koTable[id].name === name) return id;
+			}
+		}
+		// 2) BattleAliases에서 한글 koId → 영어 ID
+		if (window.BattleAliases) {
+			var koId = name.toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3\u3131-\u318E\u314F-\u3163]+/g, '');
+			if (window.BattleAliases[koId]) return window.BattleAliases[koId];
+		}
+		// 3) battleTable에서 .name이 한글인 항목 직접 검색
+		if (battleTable) {
+			for (var bid in battleTable) {
+				if (battleTable[bid] && battleTable[bid].name === name) return bid;
+			}
+		}
+		return name;
+	}
+
+	patchWhenReady(function() {
+		if (typeof Dex === 'undefined' || !Dex.species) return false;
+		if (Dex._koDexGetPatch) return true;
+		var kd = window._KoData;
+		if (!kd) return false;
+
+		var patchMap = [
+			{ getter: Dex.species, koTable: kd.pokemon, bt: window.BattlePokedex },
+			{ getter: Dex.items,   koTable: kd.items,   bt: window.BattleItems },
+			{ getter: Dex.moves,   koTable: kd.moves,   bt: window.BattleMovedex },
+			{ getter: Dex.abilities, koTable: kd.abilities, bt: window.BattleAbilities }
+		];
+
+		for (var p = 0; p < patchMap.length; p++) {
+			var entry = patchMap[p];
+			if (!entry.getter || !entry.getter.get) continue;
+			(function(dexObj, koTable, bt) {
+				var _origGet = dexObj.get.bind(dexObj);
+				dexObj.get = function(name) {
+					if (name && typeof name === 'string' && KO_RE.test(name)) {
+						name = resolveKoName(name, koTable, bt);
+					}
+					return _origGet(name);
+				};
+			})(entry.getter, entry.koTable, entry.bt);
+		}
+
+		Dex._koDexGetPatch = true;
+		console.log('[한글화] Dex.species/items/moves/abilities.get 한글→영어 변환 패치 완료');
+		return true;
+	});
+})();
+
 // Storage.packTeam 패치: 한글 종족명/아이템/특성/기술명 → 영어 ID 변환 후 저장
 // 문제: unpackTeam이 Dex에서 한글명으로 복원 → packTeam에서 toID(한글)='' → 빈값으로 저장됨
 // BattleAliases 대신 _KoData로 직접 조회 (BattleAliases 덮어쓰기 문제 우회)
